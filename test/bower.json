@@ -1,0 +1,32 @@
+{
+  "name": "Scrutineer",
+  "main": "test.js",
+  "authors": [],
+  "description": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chai-jquery": "~2.0.1",
+    "chai": "~3.5.0",
+    "mocha": "~2.4.5",
+    "jquery": "~1.9.1",
+    "requirejs": "~2.2.0",
+    "underscore-amd": "~1.5.2",
+    "requirejs-plugins": "~1.0.3",
+    "lodash": "~4.13.1",
+    "sinon": "~1.17.4",
+
+  },
+  "resolutions": {
+    "jquery": "~1.9.1"
+  }
+}
