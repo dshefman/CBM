@@ -66,6 +66,20 @@ define([
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
 
             })
+
+            it ('example 2', function(){
+                var dancers = [11,21,31,41,51,61];
+                var A = createJudgingResults('A', dancers, [1,2,3,4,5,6]);
+                var B = createJudgingResults('B', dancers, [5,2,3,4,1,6]);
+                var C = createJudgingResults('C', dancers, [1,5,3,2,4,6]);
+                var D = createJudgingResults('D', dancers, [1,4,3,2,5,6]);
+                var E = createJudgingResults('E', dancers, [2,1,3,4,5,6]);
+
+                var results = SC.doFinal([A,B,C,D,E]);
+                var rankingExpectation ={1:'11', 2:'21', 3:'31', 4:'41', 5:'51', 6:'61'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
         })
 
         describe('Rule 6', function(){
@@ -95,6 +109,20 @@ define([
                 assert.deepEqual(_.get(results, 'rankByDancer.66'), '6' ,'6th place couple placements');
 
                 var rankingExpectation ={1:'61', 2:'62', 3:'63', 4:'64', 5:'65', 6:'66'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
+
+            it ('example 2', function(){
+                var dancers = [12,22,32,42,52,62];
+                var A = createJudgingResults('A', dancers, [1,3,2,4,5,6]);
+                var B = createJudgingResults('B', dancers, [1,2,5,3,4,6]);
+                var C = createJudgingResults('C', dancers, [1,2,5,4,3,6]);
+                var D = createJudgingResults('D', dancers, [4,1,2,5,3,6]);
+                var E = createJudgingResults('E', dancers, [4,1,2,3,5,6]);
+
+                var results = SC.doFinal([A,B,C,D,E]);
+                var rankingExpectation ={1:'12', 2:'22', 3:'32', 4:'42', 5:'52', 6:'62'};
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
 
             })
@@ -137,10 +165,47 @@ define([
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
 
             })
+
+            it ('example 2', function(){
+                var dancers = [13,23,33,43,53,63];
+                var A = createJudgingResults('A', dancers, [1,5,2,4,3,6]);
+                var B = createJudgingResults('B', dancers, [1,5,2,4,3,6]);
+                var C = createJudgingResults('C', dancers, [1,2,5,3,4,6]);
+                var D = createJudgingResults('D', dancers, [5,2,1,3,6,4]);
+                var E = createJudgingResults('E', dancers, [5,2,4,3,1,6]);
+
+                var results = SC.doFinal([A,B,C,D,E]);
+                var rankingExpectation ={1:'13', 3:'23', 2:'33', 5:'43', 4:'53', 6:'63'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
+
+            it ('example 2b', function(){
+                var dancers = [14,24,34,44,54,64];
+                var A = createJudgingResults('A', dancers, [2,1,5,3,4,6]);
+                var B = createJudgingResults('B', dancers, [1,2,6,3,4,5]);
+                var C = createJudgingResults('C', dancers, [5,2,1,3,4,6]);
+                var D = createJudgingResults('D', dancers, [1,5,2,3,6,4]);
+                var E = createJudgingResults('E', dancers, [1,5,2,6,4,3]);
+
+                var results = SC.doFinal([A,B,C,D,E]);
+
+                assert.deepEqual(_.get(results, 'rankByDancer.14'), '1' ,'1st place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.24'), '2' ,'2nd place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.34'), '3' ,'3rd place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.44'), '4' ,'4th place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.54'), '5' ,'5th place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.64'), '6' ,'6th place couple placements');
+
+
+                var rankingExpectation ={1:'14', 2:'24', 3:'34', 4:'44', 5:'54', 6:'64'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
         })
 
         describe('Rule 8', function(){
-            it.skip('There is no majority in intial rankings', function(){
+            it('There is no majority in intial rankings', function(){
                 var dancers = [81,82,83,84,85,86];
                 var A = createJudgingResults('A', dancers, [3,4,2,1,5,6]);
                 var B = createJudgingResults('B', dancers, [3,4,2,6,5,1]);

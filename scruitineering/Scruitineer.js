@@ -162,10 +162,13 @@
         var numOfPlaces = _.size(organizedByPotentialPlaces)
         var placedDancers = [];
         var lookingForCurrentPlace = 1;
-        var dancerToPlaceInNextPosition = null;
+        var dancersToPlaceInNextPosition = null;
+        var iterationCount = 0;
+        lookingForCurrentPlace = placeDancersCompute(organizedByPotentialPlaces, rtn, placedDancers, majority, lookingForCurrentPlace, iterationCount);
+        /*
         _.each(organizedByPotentialPlaces, function (potentialPlace, key){
             var orderedPlaces = _.orderBy(potentialPlace, ['count','sum'],['desc', 'asc'])
-            console.log('placeDancers.orderPlaces', key, placedDancers, orderedPlaces);
+            console.log('\nplaceDancers.orderPlaces', key, placedDancers, orderedPlaces);
             var filterdByMajority = _.filter(orderedPlaces, function(o){
                 return o.count > majority && !_.includes(placedDancers, o.dancer);
             })
@@ -174,74 +177,160 @@
             console.log('placeDancesr.groupedMajority', JSON.stringify(groupedMajority));
             console.log('placeDancers.groupedSummation', JSON.stringify(groupedSummation));
 
+            var sortedGroupedMajority = groupingSort(groupedMajority, true)
+
+            console.log('placeDancers.sortedGroupedMajority', JSON.stringify(sortedGroupedMajority))
+
+            var sortedGroupedSummation = groupingSort(groupedSummation);
+            console.log('placeDancers.sortedGroupedSummation', JSON.stringify(sortedGroupedSummation))
 
 
 
-            var placementFound = false;
-            var placementFoundCount = 0; //should be 0
-
-
-            if (dancerToPlaceInNextPosition){
-                placedDancers.push(dancerToPlaceInNextPosition)
-                rtn[dancerToPlaceInNextPosition] = _.replace(key, '1-', '');
-                dancerToPlaceInNextPosition = null;
-                placementFound = true;
-                console.log('adding placed dancer from prev Loop', key, dancerToPlaceInNextPosition)
-            }
-
-
-
-
-            while (!placementFound && placementFoundCount < numOfPlaces) {
-                placementFoundCount++;
-
-                var highestMajorityValue = _.max(_.keys(groupedMajority));
-                var lowestSummativeValue = _.min(_.keys(groupedSummation));
-
-                var highestMajorityDancersObjectArray = groupedMajority[highestMajorityValue];
-                var lowestSummativeDancersObjectArray = groupedSummation[lowestSummativeValue];
-
-                var highestMajorityDancers = _.map(highestMajorityDancersObjectArray, function (x) {
-                    return _.get(x, 'dancer')
-                })
-                var lowestSummativeDancers = _.map(lowestSummativeDancersObjectArray, function (x) {
-                    return _.get(x, 'dancer')
-                })
-
-                var dancersToAdd = highestMajorityDancers;
-                if (_.size(highestMajorityDancers) > 1) {
-                    console.log('switch To Rule 7: Summative for ' + key, lowestSummativeDancers)
-                    dancersToAdd = lowestSummativeDancers
-                }
-
-                if (_.size(dancersToAdd) > 1){
-                    dancerToPlaceInNextPosition = dancersToAdd[1]
-                }
-
-                console.log('dancers to add', dancersToAdd);
-                _.each(dancersToAdd, function(dancer){
-                    console.log('attempt to add dancer', dancer, 'to', placedDancers);
-
-                    if (_.includes(placedDancers, dancer)){
-                        console.log(dancer +' has already been placed');
+            _.each(sortedGroupedMajority, function(groupedMajoritylist){
+                if (!dancersToPlaceInNextPosition) {
+                    console.log('placeDancers.groupedMajorityList', JSON.stringify(groupedMajoritylist))
+                    if (_.size(groupedMajoritylist) == 1) {
+                        var dancerObj = groupedMajoritylist[0];
+                        var dancer = _.get(dancerObj, 'dancer');
+                        console.log('Majority.placingADancer');
+                        var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, rtn, placedDancers);
+                        if (dancerPlaced) {
+                            lookingForCurrentPlace++
+                        }
                     } else {
-                        placedDancers.push(dancer)
-                        rtn[dancer] = _.toString(lookingForCurrentPlace++); //_.replace(key, '1-', '');
-                        console.log('adding placed dancer', key, dancer)
-                        placementFound = dancer;
+                        //lets break some majority ties
+                        majorityCount = _.get(_.flattenDeep(groupedMajoritylist), '[0].count')
+                        console.log('placeDancers.groupedSummationList for majority of ', majorityCount)
+                        _.each(sortedGroupedSummation, function (groupedSummationList) {
+                            if (!dancersToPlaceInNextPosition) {
+                                if (_.size(groupedSummationList) == 1) {
+                                    var dancerObj = groupedSummationList[0];
+                                    var dancer = _.get(dancerObj, 'dancer');
+                                    console.log('Summation.placingADancer')
+                                    var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, rtn, placedDancers);
+                                    if (dancerPlaced) {
+                                        lookingForCurrentPlace++
+                                    }
+                                } else {
+                                    console.log('placeDancers.majority and summation tie', key)
+                                    dancersToPlaceInNextPosition = groupedMajoritylist
+                                    var filteredOrganizedByPotentialPlaces ={};
+                                    var tiedDancers = _.map(groupedMajoritylist, 'dancer');
+                                    console.log('tiedDancers', groupedMajoritylist, tiedDancers);
+                                    _.each(organizedByPotentialPlaces, function (potentialPlace, key){
+                                        filteredOrganizedByPotentialPlaces[key] = _.filter(potentialPlace, function(o){
+                                            return _.includes(tiedDancers, o.dancer);
+                                        })
+                                        //console.log('filteredOrganizedByPotentialPlaces', JSON.stringify(filteredOrganizedByPotentialPlaces))
+                                    })
+                                }
+                            }
+                        })
                     }
-                })
-
-                if (!placementFound){
-                    delete groupedMajority[highestMajorityValue];
                 }
-            }
+            })
 
 
+        })
+        */
+        return rtn;
+    }
+
+    function placeDancersCompute(organizedByPotentialPlaces, results, placedDancers, majority, lookingForCurrentPlace, iterationCount) {
+        if (iterationCount > _.size(organizedByPotentialPlaces)) { return lookingForCurrentPlace } //prevent excess looping
+        _.each(organizedByPotentialPlaces, function (potentialPlace, key) {
+            var orderedPlaces = _.orderBy(potentialPlace, ['count', 'sum'], ['desc', 'asc']);
+            console.log('\nplaceDancersCompute(' + iterationCount + ').orderPlaces', key, placedDancers, orderedPlaces);
+            var filterdByMajority = _.filter(orderedPlaces, function (o) {
+                return o.count > majority && !_.includes(placedDancers, o.dancer);
+            });
+            var groupedMajority = _.groupBy(filterdByMajority, 'count');
+            var groupedSummation = _.groupBy(filterdByMajority, 'sum');
+            console.log('placeDancersCompute.groupedMajority', JSON.stringify(groupedMajority));
+            console.log('placeDancersCompute.groupedSummation', JSON.stringify(groupedSummation));
+
+            var sortedGroupedMajority = groupingSort(groupedMajority, true);
+
+            console.log('placeDancersCompute.sortedGroupedMajority', JSON.stringify(sortedGroupedMajority));
+
+            var sortedGroupedSummation = groupingSort(groupedSummation);
+            console.log('placeDancersCompute.sortedGroupedSummation', JSON.stringify(sortedGroupedSummation));
+
+
+            _.each(sortedGroupedMajority, function (groupedMajoritylist) {
+                console.log('placeDancersCompute.groupedMajorityList', JSON.stringify(groupedMajoritylist));
+                if (_.size(groupedMajoritylist) == 1) {
+                    var dancerObj = groupedMajoritylist[0];
+                    var dancer = _.get(dancerObj, 'dancer');
+                    console.log('Majority.placingADancer', placedDancers);
+                    var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, results, placedDancers);
+                    if (dancerPlaced) {
+                        lookingForCurrentPlace++
+                    }
+                } else {
+                    //lets break some majority ties
+                    majorityCount = _.get(_.flattenDeep(groupedMajoritylist), '[0].count');
+                    console.log('placeDancersCompute.groupedSummationList for majority of ', majorityCount);
+                    _.each(sortedGroupedSummation, function (groupedSummationList) {
+                        if (_.size(groupedSummationList) == 1) {
+                            var dancerObj = groupedSummationList[0];
+                            var dancer = _.get(dancerObj, 'dancer');
+                            console.log('Summation.placingADancer');
+                            var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, results, placedDancers);
+                            if (dancerPlaced) {
+                                lookingForCurrentPlace++;
+                            }
+                        } else {
+                            console.log('placeDancersCompute.majority and summation tie', key);
+                            var filteredOrganizedByPotentialPlaces = {};
+                            var tiedDancers = _.map(groupedMajoritylist, 'dancer');
+                            console.log('tiedDancers', groupedMajoritylist, tiedDancers);
+                            _.each(organizedByPotentialPlaces, function (potentialPlace, key) {
+                                filteredOrganizedByPotentialPlaces[key] = _.filter(potentialPlace, function (o) {
+                                    return _.includes(tiedDancers, o.dancer);
+                                });
+                            })
+                            lookingForCurrentPlace = placeDancersCompute(filteredOrganizedByPotentialPlaces, results, placedDancers, majority, lookingForCurrentPlace, iterationCount+1);
+                        }
+                    })
+                }
+            })
+        })
+        return lookingForCurrentPlace;
+    }
+
+    function groupingSort(groupedCollection, isDesc){
+        var rtn = [];
+
+        var compare = function(a,b){
+            var numA = _.toInteger(a);
+            var numB = _.toInteger(b);
+
+            var reverse = (isDesc) ? -1 : 1;
+            if (numA < numB) return -1 * reverse;
+            if (numA == numB) return 0;
+            if (numA > numB) return 1 * reverse;
+        }
+        var sortedKeys = _.keys(groupedCollection).sort(compare);
+
+        _.each(sortedKeys, function(key){
+            var add = groupedCollection[key];
+             rtn.push(add);
         })
         return rtn;
     }
 
+    function placeADancer(dancer, place, results, placedDancers){
+        if (_.includes(placedDancers, dancer)){
+            console.log(dancer +' has already been placed');
+            return false;
+        } else {
+            placedDancers.push(dancer);
+            results[dancer] = _.toString(place);
+            console.log('adding placed dancer', place, dancer)
+            return true
+        }
+    }
 
 
     function buildRanking(placementsByDancer){
