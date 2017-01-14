@@ -165,74 +165,7 @@
         var dancersToPlaceInNextPosition = null;
         var iterationCount = 0;
         lookingForCurrentPlace = placeDancersCompute(organizedByPotentialPlaces, rtn, placedDancers, majority, lookingForCurrentPlace, iterationCount);
-        /*
-        _.each(organizedByPotentialPlaces, function (potentialPlace, key){
-            var orderedPlaces = _.orderBy(potentialPlace, ['count','sum'],['desc', 'asc'])
-            console.log('\nplaceDancers.orderPlaces', key, placedDancers, orderedPlaces);
-            var filterdByMajority = _.filter(orderedPlaces, function(o){
-                return o.count > majority && !_.includes(placedDancers, o.dancer);
-            })
-            var groupedMajority = _.groupBy(filterdByMajority,'count');
-            var groupedSummation = _.groupBy(filterdByMajority, 'sum')
-            console.log('placeDancesr.groupedMajority', JSON.stringify(groupedMajority));
-            console.log('placeDancers.groupedSummation', JSON.stringify(groupedSummation));
 
-            var sortedGroupedMajority = groupingSort(groupedMajority, true)
-
-            console.log('placeDancers.sortedGroupedMajority', JSON.stringify(sortedGroupedMajority))
-
-            var sortedGroupedSummation = groupingSort(groupedSummation);
-            console.log('placeDancers.sortedGroupedSummation', JSON.stringify(sortedGroupedSummation))
-
-
-
-            _.each(sortedGroupedMajority, function(groupedMajoritylist){
-                if (!dancersToPlaceInNextPosition) {
-                    console.log('placeDancers.groupedMajorityList', JSON.stringify(groupedMajoritylist))
-                    if (_.size(groupedMajoritylist) == 1) {
-                        var dancerObj = groupedMajoritylist[0];
-                        var dancer = _.get(dancerObj, 'dancer');
-                        console.log('Majority.placingADancer');
-                        var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, rtn, placedDancers);
-                        if (dancerPlaced) {
-                            lookingForCurrentPlace++
-                        }
-                    } else {
-                        //lets break some majority ties
-                        majorityCount = _.get(_.flattenDeep(groupedMajoritylist), '[0].count')
-                        console.log('placeDancers.groupedSummationList for majority of ', majorityCount)
-                        _.each(sortedGroupedSummation, function (groupedSummationList) {
-                            if (!dancersToPlaceInNextPosition) {
-                                if (_.size(groupedSummationList) == 1) {
-                                    var dancerObj = groupedSummationList[0];
-                                    var dancer = _.get(dancerObj, 'dancer');
-                                    console.log('Summation.placingADancer')
-                                    var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, rtn, placedDancers);
-                                    if (dancerPlaced) {
-                                        lookingForCurrentPlace++
-                                    }
-                                } else {
-                                    console.log('placeDancers.majority and summation tie', key)
-                                    dancersToPlaceInNextPosition = groupedMajoritylist
-                                    var filteredOrganizedByPotentialPlaces ={};
-                                    var tiedDancers = _.map(groupedMajoritylist, 'dancer');
-                                    console.log('tiedDancers', groupedMajoritylist, tiedDancers);
-                                    _.each(organizedByPotentialPlaces, function (potentialPlace, key){
-                                        filteredOrganizedByPotentialPlaces[key] = _.filter(potentialPlace, function(o){
-                                            return _.includes(tiedDancers, o.dancer);
-                                        })
-                                        //console.log('filteredOrganizedByPotentialPlaces', JSON.stringify(filteredOrganizedByPotentialPlaces))
-                                    })
-                                }
-                            }
-                        })
-                    }
-                }
-            })
-
-
-        })
-        */
         return rtn;
     }
 
@@ -285,12 +218,32 @@
                             var filteredOrganizedByPotentialPlaces = {};
                             var tiedDancers = _.map(groupedMajoritylist, 'dancer');
                             console.log('tiedDancers', groupedMajoritylist, tiedDancers);
-                            _.each(organizedByPotentialPlaces, function (potentialPlace, key) {
-                                filteredOrganizedByPotentialPlaces[key] = _.filter(potentialPlace, function (o) {
-                                    return _.includes(tiedDancers, o.dancer);
-                                });
+                            var foundCurrentKey = false;
+                            _.each(organizedByPotentialPlaces, function (potentialPlace, key2) {
+                                var foundKeyThisIteration = false;
+                                if (key2 == key) {foundCurrentKey = true; foundKeyThisIteration = true}
+                                if (foundCurrentKey && !foundKeyThisIteration) {
+                                    filteredOrganizedByPotentialPlaces[key2] = _.filter(potentialPlace, function (o) {
+                                        return _.includes(tiedDancers, o.dancer);
+                                    });
+                                }
                             })
-                            lookingForCurrentPlace = placeDancersCompute(filteredOrganizedByPotentialPlaces, results, placedDancers, majority, lookingForCurrentPlace, iterationCount+1);
+                            if (!_.isEmpty(filteredOrganizedByPotentialPlaces)) {
+                                console.log('placeDancersCompute.majority and summation tie. new FilteredOrganizedByPotentialPlaces', JSON.stringify(filteredOrganizedByPotentialPlaces))
+                                lookingForCurrentPlace = placeDancersCompute(filteredOrganizedByPotentialPlaces, results, placedDancers, majority, lookingForCurrentPlace, iterationCount + 1);
+                            } else {
+                                console.log('unbreakable tie for ' + key +'. with dancers:' + tiedDancers)
+                                var averagePositionSought = _.mean(_.map(tiedDancers, function(val, index){
+                                    return lookingForCurrentPlace + index;
+                                }));
+                                _.each(tiedDancers, function(dancer){
+                                    var dancerPlaced = placeADancer(dancer, averagePositionSought, results, placedDancers);
+                                    if (dancerPlaced) {
+                                        lookingForCurrentPlace++;
+                                    }
+                                })
+
+                            }
                         }
                     })
                 }
@@ -336,7 +289,19 @@
     function buildRanking(placementsByDancer){
         var rankings = {}
         _.forEach(placementsByDancer, function(rank, dancer){
-            _.set(rankings, rank, dancer);
+            var rankValueinRankings = _.get(rankings, rank, null);
+            console.log('buildRanking', rank, dancer, rankValueinRankings)
+            if (_.isNull(rankValueinRankings)) {
+                rankings[rank]=dancer;
+            } else if (_.isString(rankValueinRankings)) {
+                rankings[rank] = [rankValueinRankings, dancer].sort()
+            } else if (_.isArray(rankValueinRankings)) {
+                rankValueinRankings.push(dancer)
+                rankValueinRankings.sort();
+            } else {
+                throw Error('rankValue is unknown type')
+            }
+            console.log('buildRanking.iteration', JSON.stringify(rankings))
         })
         return rankings
     }

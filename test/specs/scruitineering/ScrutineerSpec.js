@@ -202,6 +202,40 @@ define([
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
 
             })
+
+            it ('Rule 7c: ties. If there is a tie at the last column, each couple is awarded the average of the positions that we are working with', function(){
+                var dancers = [109,122,129,145,161,169];
+                var A = createJudgingResults('A', dancers, [3,6,5,2,4,1]);
+                var B = createJudgingResults('B', dancers, [5,3,4,6,2,1]);
+                var C = createJudgingResults('C', dancers, [4,5,3,2,6,1]);
+
+                var results = SC.doFinal([A,B,C]);
+
+                assert.deepEqual(_.get(results, 'rankByDancer.109'), '4.5' ,'4.5 place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.122'), '6'   ,'6th place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.129'), '4.5' ,'4.5 place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.145'), '2'   ,'2nd place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.161'), '3'   ,'3rd place couple placements');
+                assert.deepEqual(_.get(results, 'rankByDancer.169'), '1'   ,'1st place couple placements');
+
+
+                var rankingExpectation ={1:'169', 2:'145', 3:'161', 4.5:['109','129'], 6:'122'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
+
+            it ('Rule 7c-2: ties', function(){
+                var dancers = [128, 151,145,146,141,168];
+                var A = createJudgingResults('A', dancers, [1,5,4,3,6,2]);
+                var B = createJudgingResults('B', dancers, [2,6,1,3,4,5]);
+                var C = createJudgingResults('C', dancers, [1,4,3,6,5,2]);
+
+                var results = SC.doFinal([A,B,C]);
+
+                var rankingExpectation ={1:'128', 2:'168', 3:'145', 4:'146', 5.5:['141','151']};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
         })
 
         describe('Rule 8', function(){
