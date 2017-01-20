@@ -2,20 +2,23 @@
     if( typeof define === 'function' && define.amd ) {
         // AMD
         define( [
-            'lodash/lodash'
+            'lodash/lodash',
+            'scruitineering/ScruitineerUtil'
         ], factory );
     } else if( typeof exports === 'object' ) {
         // Node, CommonJS-like
         module.exports = factory(
-            require( 'lodash/lodash' )
+            require( 'lodash/lodash' ),
+            require( 'scruitineering/ScruitineerUtil' )
         );
     } else {
         // Browser globals (root is window)
-        root.ClipReader = factory(
-            root.lodash
+        root.Scruitineer = factory(
+            root.lodash,
+            root.ScruitineerUtil
         );
     }
-})( this, function( _ ) {
+})( this, function( _, Util) {
 
 
     var Scruitineer = function(){};
@@ -24,7 +27,7 @@
         // {judge:A, final: {dancer:placement}
         var numOfJudges = _.size(judgesScores);
 
-        var placementsByDancer = tabulatePlacementPerDancer(judgesScores);
+        var placementsByDancer = Util.tabulatePlacementPerDancer(judgesScores);
         console.log('doFinal.placementsByDancer', placementsByDancer);
 
         var numberOfDancers = _.size(placementsByDancer);
@@ -32,7 +35,7 @@
 
         console.log('doFinal.numberOfDancesr', numberOfDancers);
 
-        var countedPlacementsPerDancer = countPlacementsPerDancer(placementsByDancer);
+        var countedPlacementsPerDancer = Util.countPlacementsPerDancer(placementsByDancer);
         console.log('doFinal.countedPlacementsPerDancer', countedPlacementsPerDancer);
 
         var countedNandHigherPerDancer = countNandHigherPerDancer(countedPlacementsPerDancer,numberOfDancers);
@@ -49,36 +52,44 @@
 
         var rankings = buildRanking(rankingByDancer);
 
-        var rtn = {tabulation: countedNandHigherPerDancer, summation: placementSummationByDancer, rankByDancer: rankingByDancer, ranking:rankings};
+        var rtn = {
+            judgesScores: judgesScores,
+            tabulation: countedNandHigherPerDancer,
+            summation: placementSummationByDancer,
+            rankByDancer: rankingByDancer,
+            ranking:rankings
+        };
         console.log('results', JSON.stringify(rtn, null, 4));
         return rtn;
     };
 
-    function tabulatePlacementPerDancer(judgesScores){
-        // returns {dancer: [placements]
-        var results = {};
-        _.each(judgesScores, function(scoreByJudge) {
-            var judgeScore = scoreByJudge.final;
-            //console.log('judge', scoreByJudge, judgeScore)
 
-            _.each(judgeScore, function (placement, dancer){
-                //console.log("each judge", scoreByJudge.judge, dancer, placement)
-                if (!results[dancer]) {
-                    results[dancer] = []
-                }
-                results[dancer].push(placement);
-            })
-        });
-        return results;
-    }
-
+    /*
     function countPlacementsPerDancer(placementByDancer){
+
         var results = {};
         _.each(placementByDancer, function (placements, dancer){
             var countsByPlacements = _.countBy(placements); //{1:4 ,2:1}
             results[dancer] = countsByPlacements;
         });
         return results;
+    }
+    */
+
+    function sumPlacementsByDance(countedPlacementsPerDancer, numOfPlaces){
+        var results = {};
+        _.each(countedPlacementsPerDancer, function(countedPlacement, dancer){
+            var total = 0;
+            results[dancer] = {};
+            for (var key=1; key<= numOfPlaces; key++){
+                var count = _.get(countedPlacement, key, 0);
+                total = total+ count*(key);
+                //console.log('sumPlacementsByDance',dancer, '1-'+key, total);
+
+                _.set(results[dancer], '1-'+key, total);
+            }
+        });
+        return results
     }
 
     function countNandHigherPerDancer(countedPlacementsPerDancer, numberOfPlaces){
@@ -92,22 +103,6 @@
         });
 
         return results;
-    }
-
-    function sumPlacementsByDance(countedPlacementsPerDancer, numOfPlaces){
-        var results = {};
-        _.each(countedPlacementsPerDancer, function(countedPlacement, dancer){
-            var total = 0;
-            results[dancer] = {};
-           for (var key=1; key<= numOfPlaces; key++){
-                var count = _.get(countedPlacement, key, 0);
-                total = total+ count*(key);
-               //console.log('sumPlacementsByDance',dancer, '1-'+key, total);
-
-               _.set(results[dancer], '1-'+key, total);
-            }
-        });
-        return results
     }
 
     function count1ToXPlacements(targetPlacement, countByPlacement){
