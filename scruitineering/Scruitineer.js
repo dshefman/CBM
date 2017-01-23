@@ -38,10 +38,10 @@
         var countedPlacementsPerDancer = Util.countPlacementsPerDancer(placementsByDancer);
         console.log('doFinal.countedPlacementsPerDancer', countedPlacementsPerDancer);
 
-        var countedNandHigherPerDancer = countNandHigherPerDancer(countedPlacementsPerDancer,numberOfDancers);
+        var countedNandHigherPerDancer = Util.countNandHigherPerDancer(countedPlacementsPerDancer,numberOfDancers);
         console.log('doFinal.countedNandHigherPerDancer', countedNandHigherPerDancer);
 
-        var placementSummationByDancer = sumPlacementsByDance(countedPlacementsPerDancer, numOfPlaces);
+        var placementSummationByDancer = Util.sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces);
         console.log('doFinal.placementSummationByDancer', placementSummationByDancer);
 
         var organizedByPotentialPlaces = organizeByPotentialPlaces(countedNandHigherPerDancer, placementSummationByDancer);
@@ -76,6 +76,7 @@
     }
     */
 
+    /*
     function sumPlacementsByDance(countedPlacementsPerDancer, numOfPlaces){
         var results = {};
         _.each(countedPlacementsPerDancer, function(countedPlacement, dancer){
@@ -91,7 +92,9 @@
         });
         return results
     }
+    */
 
+    /*
     function countNandHigherPerDancer(countedPlacementsPerDancer, numberOfPlaces){
         var results = {};
         _.each(countedPlacementsPerDancer, function(countByPlacement, dancer){
@@ -105,17 +108,20 @@
         return results;
     }
 
-    function count1ToXPlacements(targetPlacement, countByPlacement){
-        var total = 0;
-        //console.log('count1ToXPlacements', targetPlacement, countByPlacement);
-        for (var i = 1; i <= targetPlacement; i++){
-            total += _.get(countByPlacement, i, 0);
-           // console.log('count1ToXPlacements', i, total);
+     function count1ToXPlacements(targetPlacement, countByPlacement){
+     var total = 0;
+     //console.log('count1ToXPlacements', targetPlacement, countByPlacement);
+     for (var i = 1; i <= targetPlacement; i++){
+     total += _.get(countByPlacement, i, 0);
+     // console.log('count1ToXPlacements', i, total);
 
-        }
-        return total;
+     }
+     return total;
 
-    }
+     }
+    */
+
+
 
     function organizeByPotentialPlaces(countedNandHigherPerDancer, placementSummationByDancer){
         var rtn = {};

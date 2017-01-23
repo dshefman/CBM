@@ -43,11 +43,52 @@
         return results;
     }
 
+    function countNandHigherPerDancer(countedPlacementsPerDancer, numberOfPlaces){
+        var results = {};
+        _.each(countedPlacementsPerDancer, function(countByPlacement, dancer){
+            results[dancer] = {};
+            for (var i =1 ; i<= numberOfPlaces; i++){
+                var key = '1-'+i;
+                _.set(results[dancer], key, count1ToXPlacements(i, countByPlacement))
+            }
+        });
 
+        return results;
+    }
+
+    function count1ToXPlacements(targetPlacement, countByPlacement){
+        var total = 0;
+        //console.log('count1ToXPlacements', targetPlacement, countByPlacement);
+        for (var i = 1; i <= targetPlacement; i++){
+            total += _.get(countByPlacement, i, 0);
+            // console.log('count1ToXPlacements', i, total);
+
+        }
+        return total;
+
+    }
+
+    function sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces){
+        var results = {};
+        _.each(countedPlacementsPerDancer, function(countedPlacement, dancer){
+            var total = 0;
+            results[dancer] = {};
+            for (var key=1; key<= numOfPlaces; key++){
+                var count = _.get(countedPlacement, key, 0);
+                total = total+ count*(key);
+                //console.log('sumPlacementsByDance',dancer, '1-'+key, total);
+
+                _.set(results[dancer], '1-'+key, total);
+            }
+        });
+        return results
+    }
 
 
     return {
         tabulatePlacementPerDancer: tabulatePlacementPerDancer,
-        countPlacementsPerDancer: countPlacementsPerDancer
+        countPlacementsPerDancer: countPlacementsPerDancer,
+        countNandHigherPerDancer: countNandHigherPerDancer,
+        sumPlacementsByDancer: sumPlacementsByDancer
     }
 } );

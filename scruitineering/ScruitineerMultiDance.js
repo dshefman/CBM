@@ -37,6 +37,9 @@
         var countedPlacementsPerDancer = Util.countPlacementsPerDancer(placementsByDancer);
         console.log('countedPlacementsPerDancer', countedPlacementsPerDancer)
 
+
+
+
         var notes = {};
         var ranking = placeDancers(sortedSummation, countedPlacementsPerDancer, notes);
 
@@ -91,6 +94,7 @@
 
        addNotesAboutWhatRuleIsUsed(notes, tiedPlacements, RULE_10);
 
+
         var findHighestPlacements = computeFindHighestPlacements(tiedPlacements, countedPlacements, lookingForRankPosition);
         console.log('findHighestPlacements',lookingForRankPosition, findHighestPlacements);
         //Compare only the first two, even if there are more then two that are tied. Since they are sorted, if [0] > [1] then we know there isn't a tie
@@ -100,12 +104,20 @@
             lookingForRankPosition = rankDancer(ranking, lookingForRankPosition, dancerPlacements1.dancer);
 
         } else {
-            var hasGTERanks = dancerPlacements1.highestRank <= dancerPlacements2.highestRank;
-            var hasSameRanksGreaterCounts = dancerPlacements1.highestRank == dancerPlacements2.highestRank && dancerPlacements1.count > dancerPlacements2.count
-            console.log('hasGTERanks', hasGTERanks, 'hasSameRanksGreaterCounts', hasSameRanksGreaterCounts)
-            if (hasGTERanks || hasSameRanksGreaterCounts){
+            /*var hasGTRanks = dancerPlacements1.highestRank < dancerPlacements2.highestRank;
+            var hasSameRanks = dancerPlacements1.highestRank == dancerPlacements2.highestRank;
+            var hasSameRanksGreaterCounts = hasSameRanks && dancerPlacements1.count > dancerPlacements2.count;
+            var hasSameRanksAndSameCounts = hasSameRanks && dancerPlacements1.count == dancerPlacements2.count;
+            console.log('hasGTRanks', hasGTRanks, 'hasSameRanksGreaterCounts', hasSameRanksGreaterCounts, 'hasSameRanksAndSameCounts', hasSameRanksAndSameCounts)
+            if (hasGTRanks || hasSameRanksGreaterCounts){
+            */
+            var hasGTCounts = dancerPlacements1.count > dancerPlacements2.count;
+            var hasSameCountsLTSum = dancerPlacements1.sum < dancerPlacements2.sum;
+            if (hasGTCounts || hasSameCountsLTSum) {
                 lookingForRankPosition = rankDancer(ranking, lookingForRankPosition, dancerPlacements1.dancer);
                 lookingForRankPosition = removePlacedDancerAndContinueToBreakTie(tiedPlacements, dancerPlacements1.dancer, countedPlacements, ranking, lookingForRankPosition, notes, iteration)
+            } else {
+                console.log('tie needs to be broken with rule 11')
             }
         }
         return lookingForRankPosition;
@@ -115,7 +127,7 @@
     function removePlacedDancerAndContinueToBreakTie(tiedPlacements, dancer, countedPlacements, ranking, lookingForRankPosition, notes, iteration){
         tiedPlacements = _.reject(tiedPlacements, {dancer: dancer});
         if (_.size(tiedPlacements)!=0) {
-            lookingForRankPosition = breakTie(tiedPlacements, countedPlacements, ranking, lookingForRankPosition, iteration+1)
+            lookingForRankPosition = breakTie(tiedPlacements, countedPlacements, ranking, lookingForRankPosition, notes, iteration+1)
         }
         return lookingForRankPosition
     }
@@ -127,23 +139,34 @@
     }
 
     function computeFindHighestPlacements(tiedPlacements, countedPlacements, rank){
+        var numberOfDancers = _.size(countedPlacements);
+        var countedNandHigherPerDancer = Util.countNandHigherPerDancer(countedPlacements,numberOfDancers);
+        console.log('countedNandHigherPerDancer', countedNandHigherPerDancer);
+
+
         var findHighestPlacements = _.orderBy(_.map(tiedPlacements, function (countedPlacement) {
+            var dancer = _.get(countedPlacement, 'dancer')
+            //console.log('countedPlacement', countedPlacement)
             var highestPlacements = _.pickBy(countedPlacement, function (value, key) {
                 return key <= rank || key == 'dancer'
             })
-            console.log('highestPlacements', highestPlacements)
-            var sumCount = {count: 0, dancer: '', highestRank: 100}
-            _.each(highestPlacements, function (value, key) {
-                if (key == 'dancer') {
-                    _.set(sumCount, 'dancer', value)
+            console.log('highestPlacements',rank,  highestPlacements)
+
+            var sumCount = {count: 0, sum:0, dancer: dancer}
+            //Get the 1-N count for this next rank
+            sumCount.count = _.get(_.get(countedNandHigherPerDancer, dancer), '1-' + rank);
+
+            //Sum
+            sumCount.sum  =  _.reduce(_.get(countedPlacements, dancer), function(result, value, key) {
+                if (_.toNumber(key) <= rank) {
+                    //console.log('reduce', result, value, key, result+value)
+                    return result + (value * _.toNumber(key));
                 }
-                else {
-                    sumCount.count = sumCount.count + value;
-                    sumCount.highestRank = _.max([rank, _.toNumber(key)])
-                }
-            })
+                return result;
+            }, 0);
+
             return sumCount;
-        }), ['highestRank', 'count'], ['asc', 'desc'])
+        }), ['count', 'sum'], ['desc', 'asc'])
         return findHighestPlacements
     }
 

@@ -120,6 +120,38 @@ define([
 
         })
 
+        describe("Rule 11: If Rule 10 is still tied, then treat the marks as if it were a single dance", function(){
+            it('Multidance, 2 way summative tie, 2 way rule 11', function(){
+                var dancers = [301,302,303,304,305,306,307];
+                var A = createDanceResults('W', dancers, [7,1,5,6,4,3,2]);
+                var B = createDanceResults('T', dancers, [6,3,5,7,4,2,1]);
+                var C = createDanceResults('V', dancers, [5,2,6,7,3,4,1]);
+                var D = createDanceResults('F', dancers, [6,1,7,5,3,4,2]);
+                var E = createDanceResults('Q', dancers, [5,1,6,7,3,4,2]);
+
+                var results = SC.doFinal([A,B,C,D,E]);
+                assert.deepEqual(_.get(results, 'summation.301'), 29, '301 sum');
+                assert.deepEqual(_.get(results, 'summation.302'), 8 , '302 sum');
+                assert.deepEqual(_.get(results, 'summation.303'), 29, '303 sum');
+                assert.deepEqual(_.get(results, 'summation.304'), 32, '304 sum');
+                assert.deepEqual(_.get(results, 'summation.305'), 17, '305 sum');
+                assert.deepEqual(_.get(results, 'summation.306'), 17, '306 sum');
+                assert.deepEqual(_.get(results, 'summation.307'), 8 , '307 sum');
+
+                assert.deepEqual(_.get(results, 'notes.301'), '11' ,'201 rule 10');
+                assert.deepEqual(_.get(results, 'notes.302'), '10' ,'202 rule 10');
+                assert.deepEqual(_.get(results, 'notes.303'), '11' ,'203 rule 10');
+                //assert.deepEqual(_.get(results, 'notes.304'), '10' ,'204 rule 10');
+                assert.deepEqual(_.get(results, 'notes.305'), '10' ,'205 rule 10');
+                assert.deepEqual(_.get(results, 'notes.306'), '10' ,'206 rule 10');
+                assert.deepEqual(_.get(results, 'notes.307'), '10' ,'206 rule 10');
+
+                var rankingExpectation ={5:'301', 1:'302', 6:'303', 7:'304', 3:'305', 4:'306', 2:'307'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
+        })
+
 
 
     })
