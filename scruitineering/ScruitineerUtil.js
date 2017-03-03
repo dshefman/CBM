@@ -43,11 +43,14 @@
         return results;
     }
 
-    function countNandHigherPerDancer(countedPlacementsPerDancer, numberOfPlaces){
+    function countNandHigherPerDancer(countedPlacementsPerDancer, numOfPlaces, startingPosition){
         var results = {};
+        startingPosition = _.toInteger(startingPosition) || 1;
+        var totalPlaces = numOfPlaces + startingPosition -1;
+        //console.log('countNandHigherPerDancer', countedPlacementsPerDancer, numOfPlaces, startingPosition)
         _.each(countedPlacementsPerDancer, function(countByPlacement, dancer){
             results[dancer] = {};
-            for (var i =1 ; i<= numberOfPlaces; i++){
+            for (var i = startingPosition ; i<= totalPlaces; i++){
                 var key = '1-'+i;
                 _.set(results[dancer], key, count1ToXPlacements(i, countByPlacement))
             }
@@ -64,16 +67,19 @@
             // console.log('count1ToXPlacements', i, total);
 
         }
+        //console.log('count1ToXPlacements', targetPlacement, countByPlacement ,total);
         return total;
 
     }
 
-    function sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces){
+    function sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces, startingPosition){
         var results = {};
+        startingPosition = _.toInteger(startingPosition) || 1;
+        var totalPlaces = numOfPlaces + startingPosition -1 ;
         _.each(countedPlacementsPerDancer, function(countedPlacement, dancer){
             var total = 0;
             results[dancer] = {};
-            for (var key=1; key<= numOfPlaces; key++){
+            for (var key= startingPosition; key<= totalPlaces; key++){
                 var count = _.get(countedPlacement, key, 0);
                 total = total+ count*(key);
                 //console.log('sumPlacementsByDance',dancer, '1-'+key, total);

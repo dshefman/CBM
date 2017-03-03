@@ -23,9 +23,10 @@
 
     var Scruitineer = function(){};
     Scruitineer.prototype.toString = function(){return 'Scruitineer'};
-    Scruitineer.prototype.doFinal = function(judgesScores){
+    Scruitineer.prototype.doFinal = function(judgesScores, startingPosition){
         // {judge:A, final: {dancer:placement}
         var numOfJudges = _.size(judgesScores);
+        var startingPosition = startingPosition || 1;
 
         var placementsByDancer = Util.tabulatePlacementPerDancer(judgesScores);
         console.log('doFinal.placementsByDancer', placementsByDancer);
@@ -34,20 +35,21 @@
         var numOfPlaces = _.size(placementsByDancer);
 
         console.log('doFinal.numberOfDancesr', numberOfDancers);
+        console.log('doFinal.startingPosition', startingPosition);
 
         var countedPlacementsPerDancer = Util.countPlacementsPerDancer(placementsByDancer);
         console.log('doFinal.countedPlacementsPerDancer', countedPlacementsPerDancer);
 
-        var countedNandHigherPerDancer = Util.countNandHigherPerDancer(countedPlacementsPerDancer,numberOfDancers);
+        var countedNandHigherPerDancer = Util.countNandHigherPerDancer(countedPlacementsPerDancer,numberOfDancers, startingPosition);
         console.log('doFinal.countedNandHigherPerDancer', countedNandHigherPerDancer);
 
-        var placementSummationByDancer = Util.sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces);
+        var placementSummationByDancer = Util.sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces, startingPosition);
         console.log('doFinal.placementSummationByDancer', placementSummationByDancer);
 
         var organizedByPotentialPlaces = organizeByPotentialPlaces(countedNandHigherPerDancer, placementSummationByDancer);
         console.log('doFinal.organizedByPotentialPlaces', organizedByPotentialPlaces);
 
-        var rankingByDancer = placeDancers(organizedByPotentialPlaces, numOfJudges);
+        var rankingByDancer = placeDancers(organizedByPotentialPlaces, numOfJudges, startingPosition);
         console.log('doFinal.rankingByDancer', rankingByDancer);
 
         var rankings = buildRanking(rankingByDancer);
@@ -155,11 +157,10 @@
         return rtn;
     }
 
-    function placeDancers(organizedByPotentialPlaces, numOfJudges){
+    function placeDancers(organizedByPotentialPlaces, numOfJudges, lookingForCurrentPlace){
         var rtn = {};
         var majority = numOfJudges/2;
         var placedDancers = [];
-        var lookingForCurrentPlace = 1;
         var iterationCount = 0;
         placeDancersCompute(organizedByPotentialPlaces, rtn, placedDancers, majority, lookingForCurrentPlace, iterationCount);
 
