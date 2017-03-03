@@ -162,8 +162,30 @@
         var majority = numOfJudges/2;
         var placedDancers = [];
         var iterationCount = 0;
-        placeDancersCompute(organizedByPotentialPlaces, rtn, placedDancers, majority, lookingForCurrentPlace, iterationCount);
+        lookingForCurrentPlace = placeDancersCompute(organizedByPotentialPlaces, rtn, placedDancers, majority, lookingForCurrentPlace, iterationCount);
 
+        //After recursion, see if there are any dancers still not placed
+        //First we need to get a list of our dancers (which is not easy with the current inputs
+        var dancers = [];
+        _.each(organizedByPotentialPlaces, function (potentialPlace, key) {
+            var orderedPlaces = _.orderBy(potentialPlace, ['count', 'sum'], ['desc', 'asc']);
+            _.each(orderedPlaces, function(o){
+                dancers.push(o.dancer);
+            })
+        })
+
+        //Make sure eacher dancer has been ranked
+        _.each(_.uniq(dancers), function(dancerToCheck){
+            if (!_.isUndefined(dancerToCheck) && !_.includes(placedDancers, dancerToCheck)){
+                console.log('WHOA, there is a dancer that still needs to be placed', dancerToCheck)
+                var dancerPlaced = placeADancer(dancerToCheck, lookingForCurrentPlace, rtn, placedDancers);
+                if (dancerPlaced) {
+                    //console.log('WHEW, we were able to place dancer', dancerToCheck, dancerPlaced);
+                } else {
+                    console.log('SOMETHING WENT WRONG, could not place dancer', dancerToCheck);
+                }
+            }
+        })
         return rtn;
     }
 
@@ -177,6 +199,7 @@
               Columns are only interesting if they have majority of scores, but there could be ties
              */
             var filterdByMajority = _.filter(orderedPlaces, function (o) {
+                //console.log('placeDancersComputer.filteredByMajority', majority, o);
                 return o.count > majority && !_.includes(placedDancers, o.dancer);
             });
             var groupedMajority = _.groupBy(filterdByMajority, 'count');

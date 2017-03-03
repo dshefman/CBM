@@ -118,9 +118,20 @@
                 lookingForRankPosition = rankDancer(ranking, lookingForRankPosition, dancerPlacements1.dancer);
                 lookingForRankPosition = removePlacedDancerAndContinueToBreakTie(tiedPlacements, dancerPlacements1.dancer, countedPlacements, ranking, lookingForRankPosition, notes, iteration)
             } else {
-                console.log('tie needs to be broken with rule 11', tiedPlacements);
-                addNotesAboutWhatRuleIsUsed(notes, tiedPlacements, RULE_11, lookingForRankPosition);
-                lookingForRankPosition += _.size(tiedPlacements)
+                var filteredTiedPlacements = _.filter(tiedPlacements, function (o) {
+                    return o.dancer == dancerPlacements1.dancer || o.dancer == dancerPlacements2.dancer
+                });
+                console.log('tie needs to be broken with rule 11', filteredTiedPlacements);
+                addNotesAboutWhatRuleIsUsed(notes, filteredTiedPlacements, RULE_11, lookingForRankPosition);
+                lookingForRankPosition += _.size(filteredTiedPlacements);
+
+                var remainingTiedPlacements = _.reject(tiedPlacements, function (o) {
+                    return o.dancer == dancerPlacements1.dancer || o.dancer == dancerPlacements2.dancer
+                });
+                if (_.size(remainingTiedPlacements)) {
+                    console.log('continue to break tie with', remainingTiedPlacements);
+                    lookingForRankPosition = breakTie(remainingTiedPlacements, countedPlacements, ranking, lookingForRankPosition, notes, iteration + 1)
+                }
             }
         }
         return lookingForRankPosition;
