@@ -236,8 +236,15 @@
                     There is a majority tie, Lets to to break it with the lowest sum
                      */
                     var majorityCount = _.get(_.flattenDeep(groupedMajoritylist), '[0].count');
-                    console.log('placeDancersCompute.groupedSummationList for majority of ', majorityCount);
-                    _.each(sortedGroupedSummation, function (groupedSummationList) {
+
+                    //Lets make sure that we are only comparing the tied majorities. Filter out non-ties from the current list
+                    var sortedGroupSummationOfTiedPlaces = _.filter(sortedGroupedSummation, function(sortedGroupedSummationRank){
+                        var tiedDancers = _.map(groupedMajoritylist, function(dancerObj) { return _.get(dancerObj, 'dancer')})
+                        //console.log('sortedGroupSummationOfTiedPlaces', tiedDancers, sortedGroupedSummationRank)
+                        return _.includes(tiedDancers, _.get(sortedGroupedSummationRank, '[0].dancer'))
+                    })
+                    console.log('placeDancersCompute.groupedSummationList for majority of ', majorityCount, JSON.stringify(sortedGroupSummationOfTiedPlaces));
+                    _.each(sortedGroupSummationOfTiedPlaces, function (groupedSummationList) {
                         /*
                         There is not tie for summation, placeADancer()
                          */
@@ -255,7 +262,9 @@
                              */
                             console.log('placeDancersCompute.majority and summation tie', key);
                             var filteredOrganizedByPotentialPlaces = {};
-                            var tiedDancers = _.map(groupedMajoritylist, 'dancer');
+                            var tiedDancersCount = _.map(groupedMajoritylist, 'dancer');
+                            var tiedDancersSum = _.map(groupedSummationList, 'dancer');
+                            var tiedDancers = _.intersection(tiedDancersCount, tiedDancersSum); //Only map the dancers whose count and sum are actually tied;
                             console.log('tiedDancers', groupedMajoritylist, tiedDancers);
                             var foundCurrentKey = false;
                             _.each(organizedByPotentialPlaces, function (potentialPlace, key2) {
