@@ -55,6 +55,7 @@
             dancePlacements: dancePlacements,
             summation: placementSummationByDancer,
             notes: notes,
+            rankByDancer: _.invert(ranking),
             ranking: ranking
         };
         console.log('results', JSON.stringify(rtn, null, 4));
@@ -64,7 +65,7 @@
     function sumPlacements(placementsByDancer){
         var results = {}
         _.each(placementsByDancer, function(placements, dancer){
-            results[dancer] = _.sum(_.map(placements, _.toInteger));
+            results[dancer] = _.sum(_.map(placements, _.toNumber));
         });
         return results
     }
