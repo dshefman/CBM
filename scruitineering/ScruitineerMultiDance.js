@@ -159,12 +159,16 @@
         var countedNandHigherPerDancer = Util.countNandHigherPerDancer(countedPlacements,numberOfDancers);
         console.log('countedNandHigherPerDancer', countedNandHigherPerDancer);
 
+        var isKeyLTERank = function (key){
+            return _.ceil(_.toNumber(key)) <= rank;
+        }
 
         var findHighestPlacements = _.orderBy(_.map(tiedPlacements, function (countedPlacement) {
             var dancer = _.get(countedPlacement, 'dancer')
             //console.log('countedPlacement', countedPlacement)
             var highestPlacements = _.pickBy(countedPlacement, function (value, key) {
-                return key <= rank || key == 'dancer'
+                //console.log('highestPlacements pickBy',  _.toNumber(key), "<=", rank);
+                return key == 'dancer' || isKeyLTERank(key);
             })
             console.log('highestPlacements',rank,  highestPlacements)
 
@@ -174,7 +178,7 @@
 
             //Sum
             sumCount.sum  =  _.reduce(_.get(countedPlacements, dancer), function(result, value, key) {
-                if (_.toNumber(key) <= rank) {
+                if (isKeyLTERank(key)) {
                     //console.log('reduce', result, value, key, result+value)
                     return result + (value * _.toNumber(key));
                 }

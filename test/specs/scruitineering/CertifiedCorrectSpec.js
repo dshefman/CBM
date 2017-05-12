@@ -14,6 +14,7 @@ define([
 
         var SC;
         var SC_Multi;
+        var R11 = 'R11';
 
         beforeEach(function(){
            sandbox = sinon.sandbox.create();
@@ -54,7 +55,12 @@ define([
         function assertResults(placements, dancers, results){
             for(var i = 0 ; i < dancers.length; i++){
                 var dancer = dancers[i];
-                assert.deepEqual(_.get(results, 'rankByDancer.' +dancer ), ''+placements[i]+'' ,'placement for couple ' + dancer);
+                var isR11 = placements[i] == R11;
+                if (!isR11) {
+                    assert.deepEqual(_.get(results, 'rankByDancer.' + dancer), '' + placements[i] + '', 'placement for couple ' + dancer);
+                } else {
+                    assert.deepEqual(_.get(results, 'notes.' + dancer +'.rule'), '11', 'Rule 11 for couple ' + dancer);
+                }
             }
         }
 
@@ -1123,11 +1129,11 @@ define([
         describe('Rule 9. For a multidance, the dancer with the lowest summative score across dances is placed highest', function(){
             it('Example 9-1', function(){
                 var dancers = [91,92,93,94,95,96];
-                var W = createDanceResults('W', dancers, [2,1,6,4,5,3]);
+                var R = createDanceResults('R', dancers, [2,1,6,4,5,3]);
                 var F = createDanceResults('F', dancers, [2,1,6,5,4,3]);
                 var T = createDanceResults('T', dancers, [2,1,6,4,5,3]);
 
-                var results = SC_Multi.doFinal([W,F,T]);
+                var results = SC_Multi.doFinal([R,F,T]);
                 assertResults([2,1,6,4,5,3], dancers, results);
 
             })
@@ -1158,62 +1164,62 @@ define([
 
             it('Example 9-4', function(){
                 var dancers = [91,92,93,94,95,96];
-                var W = createDanceResults('W', dancers, [4.5,4.5,1,2,6,3]);
+                var R = createDanceResults('R', dancers, [4.5,4.5,1,2,6,3]);
                 var T = createDanceResults('T', dancers, [5.5,3,1,2,5.5,4]);
                 var F = createDanceResults('F', dancers, [6,3,1,2,5,4]);
                 var Q = createDanceResults('Q', dancers, [5,3,1,2,6,4]);
 
-                var results = SC_Multi.doFinal([W,F,T,Q]);
+                var results = SC_Multi.doFinal([R,F,T,Q]);
                 assertResults([5,3,1,2,6,4], dancers, results);
 
             })
 
             it('Example 9-5', function(){
                 var dancers = [91,92,93,94,95];
-                var W = createDanceResults('W', dancers, [4,1,5,3,2]);
+                var R = createDanceResults('R', dancers, [4,1,5,3,2]);
                 var T = createDanceResults('T', dancers, [3,1,5,4,2]);
                 var F = createDanceResults('F', dancers, [3,1,5,4,2]);
                 var V = createDanceResults('V', dancers, [3,1,5,4,2]);
 
-                var results = SC_Multi.doFinal([W,F,T,V]);
+                var results = SC_Multi.doFinal([R,F,T,V]);
                 assertResults([3,1,5,4,2], dancers, results);
 
             })
 
             it('Example 9-6', function(){
                 var dancers = [91,92,93,94,95];
-                var W = createDanceResults('W', dancers, [3.5,5,1,2,3.5]);
+                var R = createDanceResults('R', dancers, [3.5,5,1,2,3.5]);
                 var T = createDanceResults('T', dancers, [4,5,1,2,3]);
                 var F = createDanceResults('F', dancers, [5,4,1,2,3]);
                 var Q = createDanceResults('Q', dancers, [5,3,1,4,2]);
 
-                var results = SC_Multi.doFinal([W,F,T,Q]);
+                var results = SC_Multi.doFinal([R,F,T,Q]);
                 assertResults([5,4,1,2,3 ], dancers, results);
 
             })
 
             it('Example 9-7', function(){
                 var dancers = [91,92,93,94,95,96,97];
-                var W = createDanceResults('W', dancers, [2,4,5,3,6,1,7]);
+                var R = createDanceResults('R', dancers, [2,4,5,3,6,1,7]);
                 var T = createDanceResults('T', dancers, [2,3,4,6,5,1,7]);
                 var V = createDanceResults('V', dancers, [2,4,3,5,6,1,7]);
                 var F = createDanceResults('F', dancers, [2,3,4,5,6,1,7]);
                 var Q = createDanceResults('Q', dancers, [2,4,3,5,6,1,7]);
 
-                var results = SC_Multi.doFinal([W,F,V,T,Q]);
+                var results = SC_Multi.doFinal([R,F,V,T,Q]);
                 assertResults([2,3,4,5,6,1,7], dancers, results);
 
             })
 
             it('Example 9-8', function(){
                 var dancers = [91,92,93,94,95,96,97];
-                var W = createDanceResults('W', dancers, [1,4,7,3,5,2,6]);
+                var R = createDanceResults('R', dancers, [1,4,7,3,5,2,6]);
                 var T = createDanceResults('T', dancers, [2,5,6,3,4,1,7]);
                 var V = createDanceResults('V', dancers, [1,5,6,3,4,2,7]);
                 var F = createDanceResults('F', dancers, [1,5,6,3,4,2,7]);
                 var Q = createDanceResults('Q', dancers, [2,4,5,3,5,1,7]);
 
-                var results = SC_Multi.doFinal([W,F,V,T,Q]);
+                var results = SC_Multi.doFinal([R,F,V,T,Q]);
                 assertResults([1,5,6,3,4,2,7], dancers, results);
 
             })
@@ -1233,26 +1239,26 @@ define([
 
             it('Example 9-10', function(){
                 var dancers = [91,92,93,94,95,96];
-                var W = createDanceResults('W', dancers, [2,3,4,1,6,5]);
+                var R = createDanceResults('R', dancers, [2,3,4,1,6,5]);
                 var T = createDanceResults('T', dancers, [3,2,5,1,4,6]);
                 var V = createDanceResults('V', dancers, [6,2,4,1,3,5]);
                 var F = createDanceResults('F', dancers, [4,5,3,1,2,6]);
                 var Q = createDanceResults('Q', dancers, [3,2,6,1,4,5]);
 
-                var results = SC_Multi.doFinal([W,F,V,T,Q]);
+                var results = SC_Multi.doFinal([R,F,V,T,Q]);
                 assertResults([3,2,5,1,4,6], dancers, results);
 
             })
 
             it('Example 9-11', function(){
                 var dancers = [91,92,93,94,95,96,97,98];
-                var W = createDanceResults('W', dancers, [3,   8,1,6,  5,4,2,7]);
+                var R = createDanceResults('R', dancers, [3,   8,1,6,  5,4,2,7]);
                 var T = createDanceResults('T', dancers, [4,   8,1,7,  5,2,3,6]);
                 var V = createDanceResults('V', dancers, [5,   8,1,4,  6,2,3,7]);
                 var F = createDanceResults('F', dancers, [7,   8,1,5,  4,2,3,6]);
                 var Q = createDanceResults('Q', dancers, [6.5, 8,1,6.5,5,2,3,4]);
 
-                var results = SC_Multi.doFinal([W,F,V,T,Q]);
+                var results = SC_Multi.doFinal([R,F,V,T,Q]);
                 assertResults([5,8,1,6,4,2,3,7], dancers, results);
 
             })
@@ -1267,6 +1273,250 @@ define([
 
                 var results = SC_Multi.doFinal([C,R,S,P,J]);
                 assertResults([1,2,5,3,4,6], dancers, results);
+
+            })
+        })
+
+        describe('Rule 10. For a multidance tied under Rule 9, the dancer who has won the most number of dancers', function(){
+
+            it('Example 10-1', function(){
+                var dancers = [101,102,103,104,105,106,107];
+                var R = createDanceResults('R', dancers, [7,   6,1,2,3,5,4  ]);
+                var T = createDanceResults('T', dancers, [6,   5,1,2,7,4,3  ]);
+                var F = createDanceResults('F', dancers, [5.5, 4,1,2,3,7,5.5]);
+                var V = createDanceResults('V', dancers, [5,   4,1,2,6,7,3  ]);
+
+                var results = SC_Multi.doFinal([R,F,V,T]);
+                assertResults([7,5,1,2,4,6,3], dancers, results);
+
+            })
+
+            it('Example 10-2', function(){
+                var dancers = [101,102,103,104,105,106,107,108];
+                var R = createDanceResults('R', dancers, [5,3,7,2,6,4,8,1]);
+                var T = createDanceResults('T', dancers, [4,2.5,7,2.5,5,6,8,1]);
+                var F = createDanceResults('F', dancers, [3,2,7,4,5,6,8,1]);
+                var V = createDanceResults('V', dancers, [4,3,7,2,6,5,8,1]);
+
+                var results = SC_Multi.doFinal([R,F,V,T]);
+                assertResults([4,3,7,2,6,5,8,1], dancers, results);
+
+            })
+
+            it('Example 10-3', function(){
+                var dancers = [101,102,103,104,105,106];
+                var C = createDanceResults('C', dancers, [1,6,  3,  4,  5,2]);
+                var S = createDanceResults('S', dancers, [1,5,  2,  3,  6,4]);
+                var R = createDanceResults('R', dancers, [3,4,  1,  6,  5,2]);
+                var P = createDanceResults('P', dancers, [1,2.5,4.5,4.5,6,2.5]);
+
+                var results = SC_Multi.doFinal([C,S,P,R]);
+                assertResults([1,4,2,5,6,3], dancers, results);
+
+            })
+
+            it('Example 10-4', function(){
+                var dancers = [101,102,103,104,105,106];
+                var R = createDanceResults('R', dancers, [4,5,6,1,3,2]);
+                var T = createDanceResults('T', dancers, [5,3,2,6,4,1]);
+                var F = createDanceResults('F', dancers, [3,5,2,4,1,6]);
+                var Q = createDanceResults('Q', dancers, [6,5,2,1,4,3]);
+
+                var results = SC_Multi.doFinal([R,F,Q,T]);
+                assertResults([6,5,2,1,4,3], dancers, results);
+
+            })
+
+            it('Example 10-5', function(){
+                var dancers = [101,102,103,104,105,106];
+                var R = createDanceResults('R', dancers, [5,1,3,4,2,6]);
+                var T = createDanceResults('T', dancers, [3,6,4,1,2,5]);
+                var F = createDanceResults('F', dancers, [3,5,1,4,6,2]);
+                var V = createDanceResults('V', dancers, [2,1,5,4,3,6]);
+
+                var results = SC_Multi.doFinal([R,F,V,T]);
+                assertResults([3,1,5,4,2,6], dancers, results);
+
+            })
+
+            it('Example 10-6', function(){
+                var dancers = [101,102,103,104,105,106,107];
+                var C = createDanceResults('C', dancers, [7,1,6,4,3,2,5]);
+                var R = createDanceResults('R', dancers, [7,2,6,4,3,1,5]);
+                var S = createDanceResults('S', dancers, [6,4,5,1,3,2,7]);
+                var P = createDanceResults('P', dancers, [7,1,5,2,4,3,6]);
+
+                var results = SC_Multi.doFinal([C,S,P,R]);
+                assertResults([7,1,5,3,4,2,6], dancers, results);
+
+            })
+
+            it('Example 10-7', function(){
+                var dancers = [101,102,103,104,105,106];
+                var R = createDanceResults('R', dancers, [4,3,1,2,6,5]);
+                var T = createDanceResults('T', dancers, [5,6,3,2,1,4]);
+                var F = createDanceResults('F', dancers, [1.5, 1.5, 6,5,4,3]);
+                var Q = createDanceResults('Q', dancers, [1.5, 1.5, 5,6,4,3]);
+
+                var results = SC_Multi.doFinal([R,F,Q,T]);
+                assertResults([R11, R11, R11, R11, 6,5], dancers, results);
+
+            })
+
+            it('Example 10-8', function(){
+                var dancers = [101,102,103,104,105,106];
+                var C = createDanceResults('C', dancers, [3,1,  2,  4,5,  6]);
+                var R = createDanceResults('R', dancers, [2,4,  3,  6,1,  5]);
+                var S = createDanceResults('S', dancers, [1,5,  2,  3,6,  4]);
+                var P = createDanceResults('P', dancers, [1,2.5,5.5,4,5.5,2.5]);
+
+                var results = SC_Multi.doFinal([C,S,P,R]);
+                assertResults([1,3,2,4,6,5], dancers, results);
+
+            })
+
+            it('Example 10-9', function(){
+                var dancers = [101,102,103,104,105,106];
+                var R = createDanceResults('R', dancers, [5,1,2,6,3,4]);
+                var T = createDanceResults('T', dancers, [1,4,2,3,6,5]);
+                var F = createDanceResults('F', dancers, [2,4,3,1,5,6]);
+                var V = createDanceResults('V', dancers, [3,2,4,1,6,5]);
+
+                var results = SC_Multi.doFinal([R,F,V,T]);
+                assertResults([R11, R11, 4, 1, 6, 5], dancers, results);
+
+            })
+
+            it('Example 10-10', function(){
+                var dancers = [101,102,103,104,105,106,107];
+                var R = createDanceResults('R', dancers, [7,1,5,6,4,3,2]);
+                var T = createDanceResults('T', dancers, [6,3,5,7,4,2,1]);
+                var V = createDanceResults('V', dancers, [5,2,6,7,3,4,1]);
+                var F = createDanceResults('F', dancers, [6,1,7,5,3,4,2]);
+                var Q = createDanceResults('Q', dancers, [5,1,6,7,3,4,2]);
+
+                var results = SC_Multi.doFinal([R,F,V,T,Q]);
+                assertResults([R11, 1, R11, 7,3,4,2], dancers, results);
+
+            })
+
+            it('Example 10-11', function(){
+                var dancers = [101,102,103,104,105,106];
+                var R = createDanceResults('R', dancers, [6,3,4,2,5,1]);
+                var T = createDanceResults('T', dancers, [6,3,4,2,5,1]);
+                var F = createDanceResults('F', dancers, [5.5, 4, 3, 2, 5.5, 1]);
+                var Q = createDanceResults('Q', dancers, [4,5,3,2,6,1]);
+
+                var results = SC_Multi.doFinal([R,F,T,Q]);
+                assertResults([6,4,3,2,5,1], dancers, results);
+
+            })
+
+            it('Example 10-12', function(){
+                var dancers = [101,102,103,104,105,106];
+                var C = createDanceResults('C', dancers, [3,5,1,2,6,4]);
+                var R = createDanceResults('R', dancers, [3,6,1,2,4,5]);
+                var S = createDanceResults('S', dancers, [6,2,3,1,4,5]);
+                var B = createDanceResults('B', dancers, [6,5,1.5, 1.5, 3.5, 3.5]);
+
+                var results = SC_Multi.doFinal([C,S,B,R]);
+                assertResults([6,5,1,2, R11, R11], dancers, results);
+
+            })
+        })
+
+        describe('Rule 11. For a multidance tied under Rule 10, recompute all of the scores as if it were a single dance', function(){
+            it('Excercise 11-1', function(){
+                var dancers = [111,112,113,114,115,116,117];
+                var F_A = createJudgingResults('A', dancers, [6,3,1,4,7,2,5]);
+                var F_B = createJudgingResults('B', dancers, [4,2,1,6,7,5,3]);
+                var F_C = createJudgingResults('C', dancers, [6,7,3,2,4,5,1]);
+                var F_D = createJudgingResults('D', dancers, [7,5,2,3,6,4,1]);
+                var F_E = createJudgingResults('E', dancers, [5,2,1,6,4,3,7]);
+
+                var T_A = createJudgingResults('A', dancers, [5,6,1,2,7,3,4]);
+                var T_B = createJudgingResults('B', dancers, [7,2,1,6,4,5,3]);
+                var T_C = createJudgingResults('C', dancers, [4,7,5,2,6,3,1]);
+                var T_D = createJudgingResults('D', dancers, [7,5,3,2,6,4,1]);
+                var T_E = createJudgingResults('E', dancers, [7,4,2,6,5,3,1]);
+
+                var F_results = SC.doFinal([F_A,F_B,F_C,F_D,F_E]);
+                var T_results = SC.doFinal([T_A,T_B,T_C,T_D,T_E]);
+
+                var F = {dance:'F', final: F_results.rankByDancer};
+                var T = {dance:'T', final: T_results.rankByDancer};
+                var allScores = _.concat([], F_results.judgesScores, T_results.judgesScores)
+                var results = SC_Multi.doFinal([F,T], allScores);
+                
+                assertResults([7,4,1,3,6,5,2], dancers, results);
+
+            })
+
+            it('Excercise 11-2', function(){
+                var dancers = [111,112,113,114,115,116,117,118];
+                var R_A = createJudgingResults('A', dancers, [8,6,2,5,7,1,3,4]);
+                var R_B = createJudgingResults('B', dancers, [8,6,4,2,1,3,7,5]);
+                var R_C = createJudgingResults('C', dancers, [8,6,7,2,5,3,1,4]);
+                var R_D = createJudgingResults('D', dancers, [8,5,4,6,2,1,3,7]);
+                var R_E = createJudgingResults('E', dancers, [8,7,5,4,1,2,3,6]);
+
+                var Q_A = createJudgingResults('A', dancers, [8,6,2,5,7,1,3,4]);
+                var Q_B = createJudgingResults('B', dancers, [8,6,3,2,1,5,7,4]);
+                var Q_C = createJudgingResults('C', dancers, [8,5,6,2,3,1,4,7]);
+                var Q_D = createJudgingResults('D', dancers, [8,6,7,3,1,2,5,4]);
+                var Q_E = createJudgingResults('E', dancers, [8,7,6,4,1,2,3,5]);
+
+                var R_results = SC.doFinal([R_A,R_B,R_C,R_D,R_E]);
+                var Q_results = SC.doFinal([Q_A,Q_B,Q_C,Q_D,Q_E]);
+
+                var R = {dance:'F', final: R_results.rankByDancer};
+                var Q = {dance:'T', final: Q_results.rankByDancer};
+                var allScores = _.concat([], R_results.judgesScores, Q_results.judgesScores)
+                var results = SC_Multi.doFinal([R,Q], allScores);
+
+                assertResults([8,7,6,4,2,1,3,5], dancers, results);
+
+            })
+
+            it('Excercise 11-3', function(){
+                var dancers = [111,112,113,114,115,116,117,];
+                var R_A = createJudgingResults('A', dancers, [6,5,2,4,7,3,1]);
+                var R_B = createJudgingResults('B', dancers, [6,5,4,2,7,3,1]);
+                var R_C = createJudgingResults('C', dancers, [6,5,3,1,7,4,2]);
+                var R_D = createJudgingResults('D', dancers, [7,4,5,1,6,3,2]);
+                var R_E = createJudgingResults('E', dancers, [7,6,4,2,5,3,1]);
+
+                var S_A = createJudgingResults('A', dancers, [7,5,3,4,6,2,1]);
+                var S_B = createJudgingResults('B', dancers, [5,6,3,2,7,4,1]);
+                var S_C = createJudgingResults('C', dancers, [7,4,3,2,6,5,1]);
+                var S_D = createJudgingResults('D', dancers, [7,3,5,1,6,4,2]);
+                var S_E = createJudgingResults('E', dancers, [6,5,4,2,7,3,1]);
+
+                var B_A = createJudgingResults('A', dancers, [6,5,4,3,7,2,1]);
+                var B_B = createJudgingResults('B', dancers, [6,5,3,2,7,4,1]);
+                var B_C = createJudgingResults('C', dancers, [6,3,4,2,7,5,1]);
+                var B_D = createJudgingResults('D', dancers, [7,4,6,1,5,3,2]);
+                var B_E = createJudgingResults('E', dancers, [7,6,4,2,5,3,1]);
+
+                var M_A = createJudgingResults('A', dancers, [7,5,3,4,6,2,1]);
+                var M_B = createJudgingResults('B', dancers, [6,5,3,2,7,4,1]);
+                var M_C = createJudgingResults('C', dancers, [7,4,5,2,6,3,1]);
+                var M_D = createJudgingResults('D', dancers, [6,2,4,1,7,5,3]);
+                var M_E = createJudgingResults('E', dancers, [7,6,3,2,5,4,1]);
+
+                var R_results = SC.doFinal([R_A,R_B,R_C,R_D,R_E]);
+                var S_results = SC.doFinal([S_A,S_B,S_C,S_D,S_E]);
+                var B_results = SC.doFinal([B_A,B_B,B_C,B_D,B_E]);
+                var M_results = SC.doFinal([M_A,M_B,M_C,M_D,M_E]);
+
+                var R = {dance:'R', final: R_results.rankByDancer};
+                var S = {dance:'S', final: S_results.rankByDancer};
+                var B = {dance:'B', final: B_results.rankByDancer};
+                var M = {dance:'M', final: M_results.rankByDancer};
+                var allScores = _.concat([], R_results.judgesScores, S_results.judgesScores, B_results.judgesScores, M_results.judgesScores);
+                var results = SC_Multi.doFinal([R,S,B,M], allScores);
+
+                assertResults([7,5,4,2,6,3,1], dancers, results);
 
             })
         })

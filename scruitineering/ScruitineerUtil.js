@@ -63,8 +63,23 @@
         var total = 0;
         //console.log('count1ToXPlacements', targetPlacement, countByPlacement);
         for (var i = 1; i <= targetPlacement; i++){
-            total += _.get(countByPlacement, i, 0);
-            // console.log('count1ToXPlacements', i, total);
+            if (_.get(countByPlacement, i)) {
+                //Normal sums
+                total += _.get(countByPlacement, i, 0);
+                //console.log('count1ToXPlacements', i, total);
+            } else {
+                //placement might exist as a fraction like 2.5. Math.ceil all of of the keys to match to the targetPlacement
+                _.each(countByPlacement, function (value, key) {
+                    if (!_.isInteger(_.toNumber(key))) {
+                        var ceilingPlacement = _.ceil(_.toNumber(key));
+                        if (ceilingPlacement == i ){
+                            total += value
+                        }
+                    }
+                })
+            }
+
+
 
         }
         //console.log('count1ToXPlacements', targetPlacement, countByPlacement ,total);
