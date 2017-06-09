@@ -4,24 +4,24 @@
         define( [
             'lodash/lodash',
             'scruitineering/ScruitineerUtil',
-            'scruitineering/Scruitineer'
+            'scruitineering/ScruitineerSingleDance'
         ], factory );
     } else if( typeof exports === 'object' ) {
         // Node, CommonJS-like
         module.exports = factory(
             require( 'lodash/lodash' ),
             require( 'scruitineering/ScruitineerUtil' ),
-            require( 'scruitineering/Scruitineer' )
+            require( 'scruitineering/ScruitineerSingleDance' )
         );
     } else {
         // Browser globals (root is window)
         root.Scruitineer = factory(
             root.lodash,
             root.ScruitineerUtil,
-            root.Scruitineer
+            root.ScruitineerSingleDance
         );
     }
-})( this, function( _, Util, Scruitineer) {
+})( this, function( _, Util, ScruitineerSingleDance) {
 
     const RULE_10 = '10';
     const RULE_11 = '11';
@@ -225,7 +225,7 @@
         }, [])
         console.log('breakTieAsASingleDance.scoresOnly', scoresOnly)
 
-        var singleDanceScruitineer = new Scruitineer();
+        var singleDanceScruitineer = new ScruitineerSingleDance();
         var tiedPositions = _.keys(tiedDancersByRank).sort();
 
         var brokenTie = {}

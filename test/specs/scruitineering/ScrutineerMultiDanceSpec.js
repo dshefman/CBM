@@ -4,8 +4,8 @@ define([
     'lodash/lodash',
     'sinon',
     'scruitineering/ScruitineerMultiDance',
-    'scruitineering/Scruitineer'
-], function(chai, _, sinon, ScruitineerMultiDance, Scruitineer) {
+    'scruitineering/ScruitineerSingleDance'
+], function(chai, _, sinon, ScruitineerMultiDance, ScruitineerSingleDance) {
 
     describe('ScruitineerMultiDance', function() {
         var expect = chai.expect;
@@ -20,7 +20,7 @@ define([
         beforeEach(function(){
            sandbox = sinon.sandbox.create();
             SC_Multi =  new ScruitineerMultiDance()
-            SC = new Scruitineer();
+            SC = new ScruitineerSingleDance();
 
         });
 

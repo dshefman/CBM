@@ -3,9 +3,9 @@ define([
     'chai',
     'lodash/lodash',
     'sinon',
-    'scruitineering/Scruitineer',
-    'scruitineering/ScruitineerMultiDance',
-], function(chai, _, sinon, Scruitineer, ScruitineerMultiDance) {
+    'scruitineering/ScruitineerSingleDance',
+    'scruitineering/ScruitineerMultiDance'
+], function(chai, _, sinon, ScruitineerSingleDance, ScruitineerMultiDance) {
 
     describe('Certified Correct - Scrutineering Exam Prep Book Examples', function() {
         var expect = chai.expect;
@@ -18,7 +18,7 @@ define([
 
         beforeEach(function(){
            sandbox = sinon.sandbox.create();
-            SC =  new Scruitineer();
+            SC =  new ScruitineerSingleDance();
             SC_Multi = new ScruitineerMultiDance();
 
         });

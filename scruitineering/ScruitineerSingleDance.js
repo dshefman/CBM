@@ -13,7 +13,7 @@
         );
     } else {
         // Browser globals (root is window)
-        root.Scruitineer = factory(
+        root.ScruitineerSingleDance = factory(
             root.lodash,
             root.ScruitineerUtil
         );
@@ -21,9 +21,9 @@
 })( this, function( _, Util) {
 
 
-    var Scruitineer = function(){};
-    Scruitineer.prototype.toString = function(){return 'Scruitineer'};
-    Scruitineer.prototype.doFinal = function(judgesScores, startingPosition){
+    var ScruitineerSingleDance = function(){};
+    ScruitineerSingleDance.prototype.toString = function(){return 'ScruitineerSingleDance'};
+    ScruitineerSingleDance.prototype.doFinal = function(judgesScores, startingPosition){
         // {judge:A, final: {dancer:placement}
         var numOfJudges = _.size(judgesScores);
         var startingPosition = startingPosition || 1;
@@ -360,5 +360,5 @@
     }
 
 
-    return Scruitineer;
+    return ScruitineerSingleDance;
 } );
