@@ -20,37 +20,75 @@
     }
 })( this, function( _, Util) {
 
+    var verbose = true;
+    var ScruitineerSingleDance = function(){
 
-    var ScruitineerSingleDance = function(){};
+    };
+    
     ScruitineerSingleDance.prototype.toString = function(){return 'ScruitineerSingleDance'};
+
+    function log () {
+        if (verbose){
+            var logArgs = Array.prototype.slice.call(arguments);
+            logArgs.unshift('[ScruitineerSingleDance]');
+            console.log.apply(console.log, logArgs);
+        }
+    }
+
+    /**
+     * @function doFinal
+     * @description takes all of the judges scores and computes the results for a single dance
+     * @param {Object} judgesScores [{judge: ID, final: [dancer: placement]}]
+     * @param {Integer} startingPosition as to which to evaluate first, defaults to 1 but it there for recursion
+     * @returns {Object} {
+     *                      judgesScores: [
+     *                          {judge: id, final:{dancer, placement}}
+     *                      ],
+     *                      tabulation: {
+     *                          dancer: {
+     *                              "1-n": countedMarks,
+     *                      },
+     *                      summation: {
+     *                          "1-n": summedMarks
+     *                      },
+     *                      rankByDancer: {
+     *                          dancer: finalRankPosition
+     *                      },
+     *                      ranking: {
+     *                          finalRankPosition: dancer
+     *                      }
+     *
+     *                    }
+     */
     ScruitineerSingleDance.prototype.doFinal = function(judgesScores, startingPosition){
-        // {judge:A, final: {dancer:placement}
+
         var numOfJudges = _.size(judgesScores);
         var startingPosition = startingPosition || 1;
 
         var placementsByDancer = Util.tabulatePlacementPerDancer(judgesScores);
-        console.log('doFinal.placementsByDancer', placementsByDancer);
+        log('doFinal.placementsByDancer', placementsByDancer);
 
         var numberOfDancers = _.size(placementsByDancer);
         var numOfPlaces = _.size(placementsByDancer);
+        var dancers = _.keys(placementsByDancer);
 
-        console.log('doFinal.numberOfDancesr', numberOfDancers);
-        console.log('doFinal.startingPosition', startingPosition);
+        log('doFinal.numberOfDancesr', numberOfDancers);
+        log('doFinal.startingPosition', startingPosition);
 
         var countedPlacementsPerDancer = Util.countPlacementsPerDancer(placementsByDancer);
-        console.log('doFinal.countedPlacementsPerDancer', countedPlacementsPerDancer);
+        log('doFinal.countedPlacementsPerDancer', countedPlacementsPerDancer);
 
         var countedNandHigherPerDancer = Util.countNandHigherPerDancer(countedPlacementsPerDancer,numberOfDancers, startingPosition);
-        console.log('doFinal.countedNandHigherPerDancer', countedNandHigherPerDancer);
+        log('doFinal.countedNandHigherPerDancer', countedNandHigherPerDancer);
 
         var placementSummationByDancer = Util.sumPlacementsByDancer(countedPlacementsPerDancer, numOfPlaces, startingPosition);
-        console.log('doFinal.placementSummationByDancer', placementSummationByDancer);
+        log('doFinal.placementSummationByDancer', placementSummationByDancer);
 
         var organizedByPotentialPlaces = organizeByPotentialPlaces(countedNandHigherPerDancer, placementSummationByDancer);
-        console.log('doFinal.organizedByPotentialPlaces', organizedByPotentialPlaces);
+        log('doFinal.organizedByPotentialPlaces', organizedByPotentialPlaces);
 
-        var rankingByDancer = placeDancers(organizedByPotentialPlaces, numOfJudges, startingPosition);
-        console.log('doFinal.rankingByDancer', rankingByDancer);
+        var rankingByDancer = placeDancers(organizedByPotentialPlaces, numOfJudges, dancers, startingPosition);
+        log('doFinal.rankingByDancer', rankingByDancer);
 
         var rankings = buildRanking(rankingByDancer);
 
@@ -61,88 +99,43 @@
             rankByDancer: rankingByDancer,
             ranking:rankings
         };
-        console.log('results', JSON.stringify(rtn, null, 4));
+        log('results', JSON.stringify(rtn, null, 4));
         return rtn;
     };
 
 
-    /*
-    function countPlacementsPerDancer(placementByDancer){
-
-        var results = {};
-        _.each(placementByDancer, function (placements, dancer){
-            var countsByPlacements = _.countBy(placements); //{1:4 ,2:1}
-            results[dancer] = countsByPlacements;
-        });
-        return results;
-    }
-    */
-
-    /*
-    function sumPlacementsByDance(countedPlacementsPerDancer, numOfPlaces){
-        var results = {};
-        _.each(countedPlacementsPerDancer, function(countedPlacement, dancer){
-            var total = 0;
-            results[dancer] = {};
-            for (var key=1; key<= numOfPlaces; key++){
-                var count = _.get(countedPlacement, key, 0);
-                total = total+ count*(key);
-                //console.log('sumPlacementsByDance',dancer, '1-'+key, total);
-
-                _.set(results[dancer], '1-'+key, total);
-            }
-        });
-        return results
-    }
-    */
-
-    /*
-    function countNandHigherPerDancer(countedPlacementsPerDancer, numberOfPlaces){
-        var results = {};
-        _.each(countedPlacementsPerDancer, function(countByPlacement, dancer){
-            results[dancer] = {};
-            for (var i =1 ; i<= numberOfPlaces; i++){
-                var key = '1-'+i;
-                _.set(results[dancer], key, count1ToXPlacements(i, countByPlacement))
-            }
-        });
-
-        return results;
-    }
-
-     function count1ToXPlacements(targetPlacement, countByPlacement){
-     var total = 0;
-     //console.log('count1ToXPlacements', targetPlacement, countByPlacement);
-     for (var i = 1; i <= targetPlacement; i++){
-     total += _.get(countByPlacement, i, 0);
-     // console.log('count1ToXPlacements', i, total);
-
-     }
-     return total;
-
-     }
-    */
-
-
-
+    /**
+     * @function organizeByPotentialPlaces
+     * @description takes individual dancers 1-N tabulations and summations and inverts it to be keyed from the 1-N
+     * @param {Object} countedNandHigherPerDancer [{dancer: {1-1: 4, 1-2: 5, 1-3: 5, 1-4: 5, 1-5: 5}]
+     * @param {Object} placementSummationByDancer [{dancer: {1-1: 4, 1-2: 6, 1-3: 6, 1-4: 6, 1-5: 6}
+     * @returns {Object} {1-1: [ {dancer:54, sum:4, count:4}, {dancer:55, sum:1, count:1} ]}
+     */
     function organizeByPotentialPlaces(countedNandHigherPerDancer, placementSummationByDancer){
         var rtn = {};
+
+        //Create an array for each 1-N key {1-1: [], 1-2:[] }
         _.each(countedNandHigherPerDancer, function(countedNAndHigher, dancer){
             _.each(countedNAndHigher, function(count, key){
                 _.set(rtn, key, [])
             })
         });
+
+        //Populate 1-N array with dancer and count => {1-1: [ {dancer:54, count:4}, {dancer:55, count:1} ]}
         _.each(countedNandHigherPerDancer, function(countedNAndHigher, dancer){
             _.each(countedNAndHigher, function(count, key){
                 rtn[key].push ({dancer: dancer, count: count})
             })
         });
+
+        //Populate 1-N array with dancer and sum => {1-1: [ {dancer:54, sum:4}, {dancer:55, sum:1} ]}
         _.each(placementSummationByDancer, function(placementSummation, dancer){
             _.each(placementSummation, function(sum, key){
                 rtn[key].push ({dancer: dancer, sum: sum})
             })
         });
 
+        //Consolidate the array = > {1-1: [ {dancer:54, sum:4, count:4}, {dancer:55, sum:1, count:1} ]}
         _.each(rtn, function (list, key){
             var groupByDancer = _.groupBy(list, 'dancer');
             var newList = [];
@@ -157,154 +150,257 @@
         return rtn;
     }
 
-    function placeDancers(organizedByPotentialPlaces, numOfJudges, lookingForCurrentPlace){
+    /**
+     * @function placeDancers
+     * @description takes the organizedPotentialPlace list and computes the placement of each dancer (recursively)
+     * @param {Object} organizedByPotentialPlaces {1-1: [ {dancer:54, sum:4, count:4}, {dancer:55, sum:1, count:1} ]}
+     * @param {Integer} numOfJudges Number of Judges in this event. It is meeded to determine majority
+     * @param {Array} dancers, array of all of the dancers
+     * @param {Integer} lookingForCurrentPlace The current position that we are looking to fill
+     * @returns {Object} rankByDancer {54:1, 55:2, 53:3}
+     */
+    function placeDancers(organizedByPotentialPlaces, numOfJudges, dancers, lookingForCurrentPlace){
         var rtn = {};
         var majority = numOfJudges/2;
         var placedDancers = [];
         var iterationCount = 0;
-        lookingForCurrentPlace = placeDancersCompute(organizedByPotentialPlaces, rtn, placedDancers, majority, lookingForCurrentPlace, iterationCount);
 
-        //After recursion, see if there are any dancers still not placed
-        //First we need to get a list of our dancers (which is not easy with the current inputs
-        var dancers = [];
-        _.each(organizedByPotentialPlaces, function (potentialPlace, key) {
-            var orderedPlaces = _.orderBy(potentialPlace, ['count', 'sum'], ['desc', 'asc']);
-            _.each(orderedPlaces, function(o){
-                dancers.push(o.dancer);
-            })
-        })
+        var placeADancerPayload = {
+            results: rtn,
+            majority: majority,
+            placedDancers: placedDancers
+        };
 
-        //Make sure eacher dancer has been ranked
-        _.each(_.uniq(dancers), function(dancerToCheck){
-            if (!_.isUndefined(dancerToCheck) && !_.includes(placedDancers, dancerToCheck)){
-                console.log('WHOA, there is a dancer that still needs to be placed', dancerToCheck)
-                var dancerPlaced = placeADancer(dancerToCheck, lookingForCurrentPlace, rtn, placedDancers);
-                if (dancerPlaced) {
-                    //console.log('WHEW, we were able to place dancer', dancerToCheck, dancerPlaced);
-                } else {
-                    console.log('SOMETHING WENT WRONG, could not place dancer', dancerToCheck);
-                }
-            }
-        })
+        //Update iteration index after computing for place n
+        lookingForCurrentPlace = placeDancersCompute(organizedByPotentialPlaces, lookingForCurrentPlace, iterationCount, placeADancerPayload);
+
+        ensureAllDancersArePlaced(dancers, lookingForCurrentPlace, placeADancerPayload);
+
         return rtn;
     }
 
-    function placeDancersCompute(organizedByPotentialPlaces, results, placedDancers, majority, lookingForCurrentPlace, iterationCount) {
-        if (iterationCount > _.size(organizedByPotentialPlaces)) { return lookingForCurrentPlace } //prevent excess looping
+    function ensureAllDancersArePlaced(dancers, lookingForCurrentPlace, placeADancerPayload) {
+        //After recursion, see if there are any dancers still not placed
+        //Make sure eacher dancer has been ranked
+        _.each(_.uniq(dancers), function(dancerToCheck){
+            if (!_.isUndefined(dancerToCheck) && !_.includes(placeADancerPayload.placedDancers, dancerToCheck)){
+                log('WHOA, there is a dancer that still needs to be placed', dancerToCheck);
+                var dancerPlaced = placeADancer(dancerToCheck, lookingForCurrentPlace,  placeADancerPayload);
+                if (dancerPlaced) {
+                    //log('WHEW, we were able to place dancer', dancerToCheck, dancerPlaced);
+                    return true;
+                } else {
+                    log('SOMETHING WENT WRONG, could not place dancer', dancerToCheck);
+                    return false;
+                }
+            }
+        });
+    }
+
+    function placeDancersCompute(organizedByPotentialPlaces, lookingForCurrentPlace, iterationCount, placeADancerPayload) {
+
+        //prevent excess looping. return if we have already placed the results
+        if (iterationCount > _.size(organizedByPotentialPlaces)) { return lookingForCurrentPlace }
+
+        //Lets start with each place 1st, 2nd, 3rd, etc and start computing
         _.each(organizedByPotentialPlaces, function (potentialPlace, key) {
-            var orderedPlaces = _.orderBy(potentialPlace, ['count', 'sum'], ['desc', 'asc']);
-            console.log('\nplaceDancersCompute(' + iterationCount + ').orderPlaces', key, placedDancers, orderedPlaces);
 
-            /*
-              Columns are only interesting if they have majority of scores, but there could be ties
-             */
-            var filterdByMajority = _.filter(orderedPlaces, function (o) {
-                //console.log('placeDancersComputer.filteredByMajority', majority, o);
-                return o.count > majority && !_.includes(placedDancers, o.dancer);
-            });
-            var groupedMajority = _.groupBy(filterdByMajority, 'count');
-            var groupedSummation = _.groupBy(filterdByMajority, 'sum');
-            console.log('placeDancersCompute.groupedMajority', JSON.stringify(groupedMajority));
-            console.log('placeDancersCompute.groupedSummation', JSON.stringify(groupedSummation));
+            var sortedModels = createSortedGroupedModels(potentialPlace, key, placeADancerPayload.placedDancers, placeADancerPayload.majority, iterationCount);
 
-            /*
-            To make processing easier, group majority DESCENDING (highest first) and summation ASCENDING(lowest first)
-             */
-            var sortedGroupedMajority = groupingSort(groupedMajority, true);
+            //Now that it is sorted, let's pick off the first one to see if we can make a placement
+            _.each(sortedModels.sortedGroupedMajority, function (groupedMajoritylist) {
 
-            console.log('placeDancersCompute.sortedGroupedMajority', JSON.stringify(sortedGroupedMajority));
-
-            var sortedGroupedSummation = groupingSort(groupedSummation);
-            console.log('placeDancersCompute.sortedGroupedSummation', JSON.stringify(sortedGroupedSummation));
-
-
-            _.each(sortedGroupedMajority, function (groupedMajoritylist) {
-                console.log('placeDancersCompute.groupedMajorityList', JSON.stringify(groupedMajoritylist));
-                /*
-                There is no tie for majority, placeADancer()
-                 */
-                if (_.size(groupedMajoritylist) == 1) {
-                    var dancerObj = groupedMajoritylist[0];
-                    var dancer = _.get(dancerObj, 'dancer');
-                    console.log('Majority.placingADancer', placedDancers);
-                    var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, results, placedDancers);
-                    if (dancerPlaced) {
-                        lookingForCurrentPlace++
-                    }
+                log('placeDancersCompute.groupedMajorityList', JSON.stringify(groupedMajoritylist));
+                if (placeSingleMajorityPosition(groupedMajoritylist, lookingForCurrentPlace, placeADancerPayload)){
+                    lookingForCurrentPlace++; //if placing the dancer was successful, then increment our iteration
                 } else {
                     /*
-                    There is a majority tie, Lets to to break it with the lowest sum
+                     There is a majority tie, Lets to to break it with the lowest sum
                      */
-                    var majorityCount = _.get(_.flattenDeep(groupedMajoritylist), '[0].count');
-
-                    //Lets make sure that we are only comparing the tied majorities. Filter out non-ties from the current list
-                    var sortedGroupSummationOfTiedPlaces = _.filter(sortedGroupedSummation, function(sortedGroupedSummationRank){
-                        var tiedDancers = _.map(groupedMajoritylist, function(dancerObj) { return _.get(dancerObj, 'dancer')})
-                        //console.log('sortedGroupSummationOfTiedPlaces', tiedDancers, sortedGroupedSummationRank)
-                        return _.includes(tiedDancers, _.get(sortedGroupedSummationRank, '[0].dancer'))
-                    })
-                    console.log('placeDancersCompute.groupedSummationList for majority of ', majorityCount, JSON.stringify(sortedGroupSummationOfTiedPlaces));
-                    _.each(sortedGroupSummationOfTiedPlaces, function (groupedSummationList) {
-                        /*
-                        There is not tie for summation, placeADancer()
-                         */
-                        if (_.size(groupedSummationList) == 1) {
-                            var dancerObj = groupedSummationList[0];
-                            var dancer = _.get(dancerObj, 'dancer');
-                            console.log('Summation.placingADancer');
-                            var dancerPlaced = placeADancer(dancer, lookingForCurrentPlace, results, placedDancers);
-                            if (dancerPlaced) {
-                                lookingForCurrentPlace++;
-                            }
-                        } else {
-                            /*
-                            Ties for both majority and summation, Lets start looking at only the tied dancers in additional positions (rankings)
-                             */
-                            console.log('placeDancersCompute.majority and summation tie', key);
-                            var filteredOrganizedByPotentialPlaces = {};
-                            var tiedDancersCount = _.map(groupedMajoritylist, 'dancer');
-                            var tiedDancersSum = _.map(groupedSummationList, 'dancer');
-                            var tiedDancers = _.intersection(tiedDancersCount, tiedDancersSum); //Only map the dancers whose count and sum are actually tied;
-                            console.log('tiedDancers', groupedMajoritylist, tiedDancers);
-                            var foundCurrentKey = false;
-                            _.each(organizedByPotentialPlaces, function (potentialPlace, key2) {
-                                // add a modicum of efficiency, don't count columns that we've already passed, only future positions (rankings), and only the tied dancers
-                                var foundKeyThisIteration = false;
-                                if (key2 == key) {foundCurrentKey = true; foundKeyThisIteration = true}
-                                if (foundCurrentKey && !foundKeyThisIteration) {
-                                    filteredOrganizedByPotentialPlaces[key2] = _.filter(potentialPlace, function (o) {
-                                        return _.includes(tiedDancers, o.dancer);
-                                    });
-                                }
-                            });
-                            /*
-                            If we are not at the end (total number of places), then recursively try to place just the tied couples.
-                            If we are at the end, then it is a true tie and each dancer is awarded the mean (average) score of the positions that we are working with
-                             */
-                            if (!_.isEmpty(filteredOrganizedByPotentialPlaces)) {
-                                console.log('placeDancersCompute.majority and summation tie. new FilteredOrganizedByPotentialPlaces', JSON.stringify(filteredOrganizedByPotentialPlaces));
-                                lookingForCurrentPlace = placeDancersCompute(filteredOrganizedByPotentialPlaces, results, placedDancers, majority, lookingForCurrentPlace, iterationCount + 1);
-                            } else {
-                                console.log('unbreakable tie for ' + key +'. with dancers:' + tiedDancers);
-                                var averagePositionSought = _.mean(_.map(tiedDancers, function(val, index){
-                                    return lookingForCurrentPlace + index;
-                                }));
-                                _.each(tiedDancers, function(dancer){
-                                    var dancerPlaced = placeADancer(dancer, averagePositionSought, results, placedDancers);
-                                    if (dancerPlaced) {
-                                        lookingForCurrentPlace++;
-                                    }
-                                })
-
-                            }
-                        }
-                    })
+                    lookingForCurrentPlace = breakMajorityTieWithSummation(key, sortedModels, groupedMajoritylist, lookingForCurrentPlace, organizedByPotentialPlaces, iterationCount, placeADancerPayload);
                 }
             })
         });
         return lookingForCurrentPlace;
     }
 
+    function createSortedGroupedModels (potentialPlace, key, placedDancers, majority, iterationCount){
+        //First step, order the list by highest count, then by lowest sum
+        var orderedPlaces = _.orderBy(potentialPlace, ['count', 'sum'], ['desc', 'asc']);
+        log('\nplaceDancersCompute(' + iterationCount + ').orderPlaces', key, placedDancers, orderedPlaces);
+
+        /*
+         Scores are only interesting if they have majority of placements, but there could be ties
+         So remove entires that don't qualify as a majority
+         */
+        var filterdByMajority = _.filter(orderedPlaces, function (o) {
+            return o.count > majority && !_.includes(placedDancers, o.dancer);
+        });
+
+        //Now that we have a majority listing in a order by count and sum, lets find the ties,
+        //by grouping the matching counts and matching sums
+        var groupedMajority = _.groupBy(filterdByMajority, 'count');
+        var groupedSummation = _.groupBy(filterdByMajority, 'sum');
+
+        log('placeDancersCompute.groupedMajority', JSON.stringify(groupedMajority));
+        log('placeDancersCompute.groupedSummation', JSON.stringify(groupedSummation));
+
+        /*
+         To make processing easier, group majority DESCENDING (highest first) and summation ASCENDING(lowest first)
+         */
+        var sortedGroupedMajority = groupingSort(groupedMajority, true);
+        var sortedGroupedSummation = groupingSort(groupedSummation);
+
+        log('placeDancersCompute.sortedGroupedMajority', JSON.stringify(sortedGroupedMajority));
+        log('placeDancersCompute.sortedGroupedSummation', JSON.stringify(sortedGroupedSummation));
+
+        return {
+            sortedGroupedMajority : sortedGroupedMajority,
+            sortedGroupedSummation: sortedGroupedSummation
+        }
+    }
+
+    function placeSingleMajorityPosition(groupedMajoritylist, lookingForCurrentPlace, placeADancerPayload) {
+        return placeSinglePosition(groupedMajoritylist, lookingForCurrentPlace, placeADancerPayload, 'Majority.placingADancer')
+    }
+    
+    function placeSinglePosition(groupedList, lookingForCurrentPlace, placeADancerPayload, logMessage) {
+        if (_.size(groupedList) == 1) {
+            /*
+             There is no tie for this grouped list (only 1 in the first position), placeADancer()
+             */
+            var dancer = _.get(groupedList, '[0].dancer');
+            return placeADancer(dancer, lookingForCurrentPlace, placeADancerPayload, logMessage);
+        }
+
+        return false;
+    }
+
+    function breakMajorityTieWithSummation(key, sortedModels, groupedMajoritylist, lookingForCurrentPlace, organizedByPotentialPlaces, iterationCount, placeADancerPayload){
+        /*
+         There is a majority tie, Lets to to break it with the lowest sum
+         */
+
+        var majorityCount = _.get(_.flattenDeep(groupedMajoritylist), '[0].count');
+        //Lets make sure that we are only comparing the tied majorities. Filter out non-ties from the current list
+        var sortedGroupSummationOfTiedPlaces = filterMajorityListToTiedResultsOnly(sortedModels.sortedGroupedSummation, groupedMajoritylist);
+        log('placeDancersCompute.groupedSummationList for majority of ', majorityCount, JSON.stringify(sortedGroupSummationOfTiedPlaces));
+
+        //Now that the list is limited to only tie breaking majority values, lets break the tie with summation results
+        _.each(sortedGroupSummationOfTiedPlaces, function (groupedSummationList) {
+
+            if(placeSingleSummationPosition(groupedSummationList, lookingForCurrentPlace, placeADancerPayload)){
+                lookingForCurrentPlace++; //if placing the dancer was successful, then increment our iteration
+            } else {
+
+                var tiedDancerModel = findTiedDancersByPotentialPlaces(key, groupedMajoritylist, groupedSummationList, organizedByPotentialPlaces);
+                lookingForCurrentPlace = breakSummationTieRecursively(key, tiedDancerModel, lookingForCurrentPlace, iterationCount, placeADancerPayload)
+            }
+        });
+        return lookingForCurrentPlace;
+    }
+
+    function placeSingleSummationPosition(groupedSummationList, lookingForCurrentPlace, placeADancerPayload){
+        return placeSinglePosition(groupedSummationList, lookingForCurrentPlace, placeADancerPayload, 'Summation.placingADancer')
+    }
+
+    function findTiedDancersByPotentialPlaces (key, groupedMajoritylist, groupedSummationList, organizedByPotentialPlaces){
+        /*
+         Ties for both majority and summation, Lets start looking at only the tied dancers in additional positions (rankings)
+         */
+        var tiedDancers = findTiedDancers(key, groupedMajoritylist, groupedSummationList);
+        var filteredOrganizedByPotentialPlaces = filterTiedMajorityAndTiedSummationDancers(key, tiedDancers, organizedByPotentialPlaces);
+
+        return {
+            tiedDancers : tiedDancers,
+            filteredOrganizedByPotentialPlaces: filteredOrganizedByPotentialPlaces
+        }
+    }
+
+    function breakSummationTieRecursively(key, tiedDancerModel, lookingForCurrentPlace, iterationCount, placeADancerPayload){
+
+
+        /*
+         If we are not at the end (total number of places), then recursively try to place just the tied couples.
+         If we are at the end, then it is a true tie and each dancer is awarded the mean (average) score of the positions that we are working with
+         */
+
+        var filteredOrganizedByPotentialPlaces = tiedDancerModel.filteredOrganizedByPotentialPlaces;
+
+        if (!_.isEmpty(filteredOrganizedByPotentialPlaces)) {
+
+            log('placeDancersCompute.majority and summation tie. new FilteredOrganizedByPotentialPlaces', JSON.stringify(filteredOrganizedByPotentialPlaces));
+            lookingForCurrentPlace = placeDancersCompute(filteredOrganizedByPotentialPlaces, lookingForCurrentPlace, iterationCount + 1, placeADancerPayload);
+
+        } else {
+
+            lookingForCurrentPlace = placeUnbreakableTiedDancers(key, tiedDancerModel.tiedDancers, placeADancerPayload, lookingForCurrentPlace);
+
+        }
+        return lookingForCurrentPlace;
+    }
+
+
+    function findTiedDancers(key, groupedMajorityList, groupedSummationList){
+        log('placeDancersCompute.majority and summation tie', key);
+        var tiedDancersCount = _.map(groupedMajorityList, 'dancer');
+        var tiedDancersSum = _.map(groupedSummationList, 'dancer');
+
+        //Only map the dancers whose count and sum are actually tied;
+        var tiedDancers = _.intersection(tiedDancersCount, tiedDancersSum);
+        log('tiedDancers', groupedMajorityList, tiedDancers);
+
+        return tiedDancers;
+    }
+
+    function filterTiedMajorityAndTiedSummationDancers(key, tiedDancers, organizedByPotentialPlaces){
+
+        var filteredOrganizedByPotentialPlaces = {};
+
+        var foundCurrentKey = false;
+        _.each(organizedByPotentialPlaces, function (potentialPlace, key2) {
+            // add a modicum of efficiency, don't count columns that we've already passed,
+            // only future positions (rankings), and only the tied dancers
+            var foundKeyThisIteration = false;
+            if (key2 == key) {foundCurrentKey = true; foundKeyThisIteration = true}
+            if (foundCurrentKey && !foundKeyThisIteration) {
+                filteredOrganizedByPotentialPlaces[key2] = _.filter(potentialPlace, function (o) {
+                    return _.includes(tiedDancers, o.dancer);
+                });
+            }
+        });
+
+        return filteredOrganizedByPotentialPlaces;
+    }
+
+    function filterMajorityListToTiedResultsOnly(sortedGroupedSummation, groupedMajoritylist ){
+        //Lets make sure that we are only comparing the tied majorities. Filter out non-ties from the current list
+        var sortedGroupSummationOfTiedPlaces = _.filter(sortedGroupedSummation, function(sortedGroupedSummationRank){
+            var tiedDancers = _.map(groupedMajoritylist, function(dancerObj) { return _.get(dancerObj, 'dancer')});
+            return _.includes(tiedDancers, _.get(sortedGroupedSummationRank, '[0].dancer'))
+        });
+        return sortedGroupSummationOfTiedPlaces
+    }
+
+    function placeUnbreakableTiedDancers(key, tiedDancers, placeADancerPayload, lookingForCurrentPlace) {
+        // can not break the tie, compute the average score
+        log('unbreakable tie for ' + key +'. with dancers:' + tiedDancers);
+        var averagePositionSought = _.mean(_.map(tiedDancers, function(val, index){
+            return lookingForCurrentPlace + index;
+        }));
+
+        //Since we can't break the tie, we need to place all tied dancers and increment the iteration counter
+        _.each(tiedDancers, function(dancer){
+            var dancerPlaced = placeADancer(dancer, averagePositionSought, placeADancerPayload);
+            if (dancerPlaced) {
+                lookingForCurrentPlace++;
+            }
+        });
+
+        return lookingForCurrentPlace;
+    }
+
+    //Sorting a grouped collection either asc or desc
     function groupingSort(groupedCollection, isDesc){
         var rtn = [];
 
@@ -326,25 +422,36 @@
         return rtn;
     }
 
-    function placeADancer(dancer, place, results, placedDancers){
+    function placeADancer(dancer, place, placeADancerPayload, logMessage){
+        var placedDancers = placeADancerPayload.placedDancers;
+        var results = placeADancerPayload.results;
+
         if (_.includes(placedDancers, dancer)){
-            console.log(dancer +' has already been placed');
+            log(dancer +' has already been placed');
             return false;
         } else {
             placedDancers.push(dancer);
             results[dancer] = _.toString(place);
-            console.log('adding placed dancer', place, dancer);
+            logMessage = logMessage || "";
+            log('adding placed dancer:', logMessage, place, dancer);
             return true
         }
     }
 
-
+    /**
+     * @function buildRanking
+     * @description takes the ranking by dancer and swaps it to ranking by position
+     * @param {Object} placementsByDancer {54:1, 55:2, 56:3}
+     * @returns {Object} rankByDancer {1:54, 2:55, 3:56} or {1:54, 2.5:[55, 56]}
+     */
     function buildRanking(placementsByDancer){
         var rankings = {};
         _.forEach(placementsByDancer, function(rank, dancer){
+            //see if the ranking already exists as in the case of tie
             var rankValueinRankings = _.get(rankings, rank, null);
+
             if (_.isNull(rankValueinRankings)) {
-                rankings[rank]=dancer;
+                rankings[rank]=dancer; //no tie, save off the value
             } else if (_.isString(rankValueinRankings)) {
                 //First case of a tie
                 rankings[rank] = [rankValueinRankings, dancer].sort()
