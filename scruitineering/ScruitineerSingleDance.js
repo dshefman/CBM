@@ -38,7 +38,7 @@
     /**
      * @function doFinal
      * @description takes all of the judges scores and computes the results for a single dance
-     * @param {Object} judgesScores [{judge: ID, final: [dancer: placement]}]
+     * @param {Object} judgesScores [{judge: ID, final: {dancer: placement}]
      * @param {Integer} startingPosition as to which to evaluate first, defaults to 1 but it there for recursion
      * @returns {Object} {
      *                      judgesScores: [
