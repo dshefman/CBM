@@ -25,7 +25,7 @@
 
     const RULE_10 = '10';
     const RULE_11 = '11';
-    var verbose = true;
+    var verbose = false;
 
     var ScruitineerMultiDance = function(){};
     ScruitineerMultiDance.prototype.toString = function(){return 'ScruitineerMultiDance'};

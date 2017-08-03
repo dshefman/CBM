@@ -4,7 +4,7 @@
         // AMD
         define( [
             'lodash/lodash',
-            '../../../callbacks/Callbacks',
+            'callbacks/Callbacks',
             './GetFromCallback'
         ], factory );
     } else if( typeof exports === 'object' ) {

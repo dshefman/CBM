@@ -20,7 +20,7 @@
     }
 })( this, function( _, Util) {
 
-    var verbose = true;
+    var verbose = false;
     var ScruitineerSingleDance = function(){
 
     };

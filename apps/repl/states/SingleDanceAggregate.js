@@ -1,22 +1,24 @@
-
 (function( root, factory ) {
     if( typeof define === 'function' && define.amd ) {
         // AMD
         define( [
-            'lodash/lodash'
+            'lodash/lodash',
+            './Chooser'
         ], factory );
     } else if( typeof exports === 'object' ) {
         // Node, CommonJS-like
         module.exports = factory(
-            require( 'lodash/lodash' )
+            require( 'lodash/lodash' ),
+            require('./Chooser')
         );
     } else {
         // Browser globals (root is window)
         root.SingleDanceAggregate = factory(
-            root.lodash
+            root.lodash,
+            root.Chooser
         );
     }
-})( this, function( _ ) {
+})( this, function( _, Chooser ) {
 
 
     var SingleDanceAggregate = function (repl, API, nextState) {
@@ -58,7 +60,8 @@
             callback(null, computedResults.ranking );
             this.repl.setPrompt('repl> ');
             this.repl.prompt();
-            return null;
+
+            return new this.nextState(this.repl);
         }
     };
 

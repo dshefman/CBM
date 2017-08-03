@@ -33,7 +33,7 @@ define([
         });
 
 
-        describe.only('Certified Correct Fig 1-1', function () {
+        describe('Certified Correct Fig 1-1', function () {
 
             var scores;
             var actual;
@@ -106,7 +106,7 @@ define([
             })
 
         });
-        describe.only('Certified Correct Fig 1-2', function () {
+        describe('Certified Correct Fig 1-2', function () {
 
             var scores;
             var actual;
