@@ -4,8 +4,8 @@ define([
     'lodash/lodash',
     'sinon',
     'scruitineering/ScruitineerMultiDance',
-    'scruitineering/Scruitineer'
-], function(chai, _, sinon, ScruitineerMultiDance, Scruitineer) {
+    'scruitineering/ScruitineerSingleDance'
+], function(chai, _, sinon, ScruitineerMultiDance, ScruitineerSingleDance) {
 
     describe('ScruitineerMultiDance', function() {
         var expect = chai.expect;
@@ -20,7 +20,7 @@ define([
         beforeEach(function(){
            sandbox = sinon.sandbox.create();
             SC_Multi =  new ScruitineerMultiDance()
-            SC = new Scruitineer();
+            SC = new ScruitineerSingleDance();
 
         });
 
@@ -193,7 +193,6 @@ define([
                 var q_expectation ={1:'111', 2:'115', 3:'114', 4:'112', 5:'113'};
                 assert.deepEqual(_.get(Q_results, 'ranking'), q_expectation, ' Q final placements')
 
-                console.log('calc multidance')
                 var w_input = {dance:'W', final: W_results.rankByDancer};
                 var q_input = {dance:'Q', final: Q_results.rankByDancer};
                 var multi_results = SC_Multi.doFinal([w_input, q_input], _.concat([], W_results.judgesScores, Q_results.judgesScores))
@@ -229,7 +228,6 @@ define([
                 var T_expectation ={5:'111',8:'112',6:'113',3:'114',1:'115',2:'116',7:'117',4:'118'};
                 assert.deepEqual(_.get(T_results, 'ranking'), T_expectation, ' T final placements')
 
-                console.log('calc multidance')
                 var f_input = {dance:'F', final: F_results.rankByDancer};
                 var t_input = {dance:'T', final: T_results.rankByDancer};
                 var multi_results = SC_Multi.doFinal([f_input, t_input], _.concat([], F_results.judgesScores, T_results.judgesScores))
