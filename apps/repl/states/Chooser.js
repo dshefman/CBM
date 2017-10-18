@@ -46,7 +46,7 @@ const API = require('scruitineering/ScruitineerAPI');
         var currentState;
         switch (cmd) {
             case 'callbacks':
-                currentState = new eliminationAggregateState(this.repl, getFromCallbackState);
+                currentState = new eliminationAggregateState(this.repl, getFromCallbackState, Chooser);
                 break;
             case 'single':
                 currentState = new singleDanceAggregateState(this.repl, new API(), Chooser );

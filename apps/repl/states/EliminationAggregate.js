@@ -25,9 +25,10 @@
 })( this, function( _, callBackCalc, getFromCallbackState ) {
 
 
-    var EliminationAggregate = function (repl, nextState) {
+    var EliminationAggregate = function (repl, nextState, menuState) {
         this.repl = repl;
         this.nextState = nextState;
+        this.menuState = menuState;
         repl.setPrompt('callbacks> ');
         repl.prompt();
         this.evaluate = this.evaluate.bind(this);
@@ -44,7 +45,9 @@
 
     EliminationAggregate.prototype.evaluate  = function(cmd, context, filename, callback) {
         cmd = _.trim(cmd);
-        if (cmd != ''){
+        if (cmd == "menu") {
+            return new this.menuState(this.repl);
+        } else if (cmd != ''){
             var dancerCallbacks = cmd.split(',');
             this.judgesWantToSee.push(dancerCallbacks);
             callback(null)
@@ -54,7 +57,7 @@
             console.log('computing callbacks...');
             var computedResults = cb.compute(this.judgesWantToSee)
             callback(null, 'Choose number to return: ' + computedResults.availableResults );
-            return new this.nextState(this.repl, EliminationAggregate, computedResults);
+            return new this.nextState(this.repl, EliminationAggregate, computedResults, this.menuState);
         }
     };
 

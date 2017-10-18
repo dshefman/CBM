@@ -1,0 +1,28 @@
+{
+  "name": "ballroom-comp-helper",
+  "version": "0.0.1",
+  "description": "CBM ===",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "dependencies": {
+    "events": "^1.1.1",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "postinstall": "./postinstall.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dshefman/CBM.git"
+  },
+  "author": "Drew Shefman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dshefman/CBM/issues"
+  },
+  "homepage": "https://github.com/dshefman/CBM#readme"
+}
