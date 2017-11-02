@@ -1,5 +1,6 @@
 const eliminationAggregateState = require('./EliminationAggregate');
 const singleDanceAggregateState = require('./SingleDanceAggregate');
+const multiDanceAggregateState = require('./MultiDanceAggregate');
 const getFromCallbackState = require('./GetFromCallback');
 const API = require('scruitineering/ScruitineerAPI');
 
@@ -26,7 +27,8 @@ const API = require('scruitineering/ScruitineerAPI');
 
     var Chooser = function (repl, callbackResults) {
         this.repl = repl;
-        repl.setPrompt('callbacks or single> ');
+        this.danceName = "unknownDance"
+        repl.setPrompt('{danceName}||callbacks||single||multi> ');
         repl.prompt();
         this.evaluate = this.evaluate.bind(this);
         this.reset();
@@ -46,11 +48,19 @@ const API = require('scruitineering/ScruitineerAPI');
         var currentState;
         switch (cmd) {
             case 'callbacks':
-                currentState = new eliminationAggregateState(this.repl, getFromCallbackState, Chooser);
+                currentState = new eliminationAggregateState(this.repl, Chooser, this.danceName);
                 break;
             case 'single':
-                currentState = new singleDanceAggregateState(this.repl, new API(), Chooser );
+                currentState = new singleDanceAggregateState(this.repl, new API(), Chooser, this.danceName);
                 break;
+            case 'multi':
+                currentState = new multiDanceAggregateState(this.repl, new API(), Chooser, this.danceName);
+                break;
+            default: 
+                this.danceName = cmd;
+                this.repl.setPrompt('{danceName}||callbacks||single||multi('+ this.danceName + ')> ');
+                this.repl.prompt();
+                currentState = this;
         }
         return currentState
     };

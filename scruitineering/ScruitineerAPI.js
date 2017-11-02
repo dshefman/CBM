@@ -24,15 +24,19 @@
 })( this, function( _, ScruitineerSingleDance, ScruitineerMultiDance) {
 
 
-    var ScruitineerAPI = function () {
-        this.SC = new ScruitineerSingleDance();
-        this.SC_Multi = new ScruitineerMultiDance();
+    var ScruitineerAPI = function (verbose) {
+        this.verbose = verbose;
+        this.SC = new ScruitineerSingleDance(verbose);
+        this.SC_Multi = new ScruitineerMultiDance(verbose);
     };
 
     ScruitineerAPI.prototype.toString = function () {
         return 'Scruitineer'
     };
     ScruitineerAPI.prototype.doFinal = function (judgesScoresPerDance) {
+      if (this.verbose) {
+        console.log('[API].doFinal() => input:\n' + JSON.stringify(judgesScoresPerDance, null, 4) + '\n----------\n');
+      }
       var numOfDances = _.size(judgesScoresPerDance);
       var result;
       if (numOfDances == 1) {

@@ -22,14 +22,15 @@
             root.GetFromCallback
         );
     }
-})( this, function( _, callBackCalc, getFromCallbackState ) {
+})( this, function( _, callBackCalc, GetFromCallbackState ) {
 
 
-    var EliminationAggregate = function (repl, nextState, menuState) {
+    var EliminationAggregate = function (repl, menuState, danceName) {
         this.repl = repl;
-        this.nextState = nextState;
+        this.nextState = GetFromCallbackState;
         this.menuState = menuState;
-        repl.setPrompt('callbacks> ');
+        this.danceName = danceName;
+        repl.setPrompt('callbacks (' + danceName +')> ');
         repl.prompt();
         this.evaluate = this.evaluate.bind(this);
         this.reset();
@@ -46,6 +47,7 @@
     EliminationAggregate.prototype.evaluate  = function(cmd, context, filename, callback) {
         cmd = _.trim(cmd);
         if (cmd == "menu") {
+            console.log("menuState >> " + this.menuState);
             return new this.menuState(this.repl);
         } else if (cmd != ''){
             var dancerCallbacks = cmd.split(',');
@@ -57,7 +59,7 @@
             console.log('computing callbacks...');
             var computedResults = cb.compute(this.judgesWantToSee)
             callback(null, 'Choose number to return: ' + computedResults.availableResults );
-            return new this.nextState(this.repl, EliminationAggregate, computedResults, this.menuState);
+            return new this.nextState(this.repl, EliminationAggregate, computedResults, this.menuState, this.danceName);
         }
     };
 

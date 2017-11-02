@@ -21,11 +21,12 @@
 })( this, function( _, Chooser ) {
 
 
-    var SingleDanceAggregate = function (repl, API, nextState) {
+    var SingleDanceAggregate = function (repl, API, nextState, danceName) {
         this.repl = repl;
         this.nextState = nextState;
         this.API = API;
-        repl.setPrompt('single> ');
+        this.danceName = danceName;
+        repl.setPrompt('single ('+ danceName +')> ');
         repl.prompt();
         this.evaluate = this.evaluate.bind(this);
         this.reset();
@@ -57,7 +58,7 @@
             console.log('computing placements...');
 
             var computedResults = this.API.doFinal([judgesScores]);
-            callback(null, computedResults.ranking );
+            callback(null, {event: this.danceName, ranking: computedResults.ranking} );
             this.repl.setPrompt('repl> ');
             this.repl.prompt();
 

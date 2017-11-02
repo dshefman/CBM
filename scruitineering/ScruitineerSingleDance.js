@@ -21,8 +21,8 @@
 })( this, function( _, Util) {
 
     var verbose = false;
-    var ScruitineerSingleDance = function(){
-
+    var ScruitineerSingleDance = function(_verbose){
+        verbose = _verbose || false;
     };
     
     ScruitineerSingleDance.prototype.toString = function(){return 'ScruitineerSingleDance'};

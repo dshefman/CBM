@@ -20,11 +20,12 @@
     }
 })( this, function( _, eliminationAggregate ) {
 
-    var GetFromCallback = function (repl, nextState, callbackResults, menuState) {
+    var GetFromCallback = function (repl, nextState, callbackResults, menuState, danceName) {
         this.repl = repl;
         this.nextState = nextState;
         this.menuState = menuState;
-        repl.setPrompt('how many to call back> ');
+        this.danceName = danceName;
+        repl.setPrompt('how many to call back (' + danceName + ')> ');
         repl.prompt();
         this.evaluate = this.evaluate.bind(this);
         this.reset();
@@ -44,8 +45,8 @@
         var request = _.toInteger(cmd);
         var hasRequestedResults = _.indexOf(this.callbackResults.availableResults, request) != -1;
         if (hasRequestedResults) {
-            callback(null, {callback_results: this.callbackResults.results[cmd] } );
-            return new this.nextState(this.repl, GetFromCallback, this.menuState);
+            callback(null, {event: this.danceName, callback_results: this.callbackResults.results[cmd]} );
+            return new this.menuState(this.repl);
         } else if (cmd == "menu") {
             return new this.menuState(this.repl);
         } else {
