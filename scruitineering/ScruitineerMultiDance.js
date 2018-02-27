@@ -65,6 +65,7 @@
      *                    }
      */
     ScruitineerMultiDance.prototype.doFinal = function(dancePlacements, judgesScores) {
+        console.log('TESTING')
         log('doFinal inputs', JSON.stringify(dancePlacements));
         var placementsByDancer = Util.tabulatePlacementPerDancer(dancePlacements); //{101: [1,1,1]
         log('doFinal.placementsByDancer', placementsByDancer);
@@ -94,7 +95,7 @@
             dancePlacements: dancePlacements,
             summation: placementSummationByDancer,
             notes: notes,
-            rankByDancer: _.invert(ranking),
+            rankByDancer: invertRanking(ranking),
             ranking: ranking
         };
         log('results', JSON.stringify(rtn, null, 4));
@@ -359,7 +360,7 @@
             log('breakTieAsASingleDance.rankingsForTiedDancers', rankingsForTiedDancers);
 
             //Switch from {55:1, 56:2} to {1:55, 2:56} so it is easy to sort to break the tie
-            var sortedRankingsForTiedDancers = _.invert(rankingsForTiedDancers);
+            var sortedRankingsForTiedDancers = _.invertBy(rankingsForTiedDancers);
             var sortedKeys = _.keys(sortedRankingsForTiedDancers).sort();
 
             log('breakTieAsASingleDance.sortedRankingsForTiedDancers', sortedRankingsForTiedDancers);
@@ -368,13 +369,33 @@
             log('breakTieAsASingleDance.lookingForPosition', lookingForPosition , '-', (lookingForPosition + _.size(dancers)-1));
 
             _.each(sortedKeys, function(key){
-                _.set(brokenTie,  _.toString(lookingForPosition), _.get(sortedRankingsForTiedDancers, key));
+                var brokenTieByDancer = _.get(sortedRankingsForTiedDancers, key);
+                //_.invertBy groups items into arrays. This is useful for ties, but if there is only 1 item in the array
+                // lets convert it back to a string;
+                if (_.isArray(brokenTieByDancer) && brokenTieByDancer.length == 1) {
+                    brokenTieByDancer = _.first(brokenTieByDancer);
+                }
+                _.set(brokenTie,  _.toString(lookingForPosition), brokenTieByDancer);
                 lookingForPosition++;
             });
-            log('breakTieAsASingleDance.brokenTie', brokenTie)
+            log('breakTieAsASingleDance.brokenTie', JSON.stringify(brokenTie))
         });
 
         return brokenTie;
+    }
+
+    function invertRanking(ranking) { 
+        var rtn = {}; 
+        _.forIn(ranking, function(value, key) {
+            if (_.isArray(value)) {
+                _.each(value, function(v) {
+                    rtn[v] = key;
+                })
+            } else {
+                rtn[value] = key;
+            }
+        })
+        return rtn;
     }
 
     return ScruitineerMultiDance;

@@ -19,7 +19,7 @@ define([
 
         beforeEach(function(){
            sandbox = sinon.sandbox.create();
-            SC_Multi =  new ScruitineerMultiDance()
+            SC_Multi =  new ScruitineerMultiDance(true)
             SC = new ScruitineerSingleDance();
 
         });
@@ -239,6 +239,23 @@ define([
             })
         })
 
+        describe('other examples', function() {
+            it('should report full ties correctly', function() {
+                var dancers = [125, 150];
+                var C_A = createJudgingResults('A', dancers, [1,2]);
+                var R_A = createJudgingResults('A', dancers, [2,1]);
+
+                var C_results = SC.doFinal([C_A]);
+                var R_results = SC.doFinal([R_A]);
+                var c_input = {dance: 'C', final: C_results.rankByDancer};
+                var r_input = {dance: 'R', final: R_results.rankByDancer};
+                var multi_results = SC_Multi.doFinal([c_input, r_input], _.concat([], C_results.judgesScores, R_results.judgesScores));
+                var rankingExpectation ={1: ['125', '150']};
+                assert.deepEqual(_.get(multi_results, 'ranking'), rankingExpectation, 'final placements')
+                assert.deepEqual(_.get(multi_results, 'rankByDancer'), {'125': '1', '150': '1'}, 'rankByDancer');
+
+            })
+        })
 
 
     })
