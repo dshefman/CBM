@@ -32,6 +32,7 @@ const simpleReport = (results) => results.join(', ');
 router.get('/:filePath', function(req, res, next) {
   var file = req.params.filePath;
   if (file) {
+  	  console.log('reading from file', `public/output/${file}.txt`);
 	  var output = fs.readFileSync(`public/output/${file}.txt`, 'utf8')
 	  var results = processOutput(output);
 	  var callbackReport = '';

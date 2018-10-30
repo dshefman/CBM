@@ -17,7 +17,8 @@ node apps/repl/repl.js
 To MC: 
 Terminal: 
 	cd /server/
-	npm start
+	npm run build
+	npm run startEs6
 
 Browser
 	http://localhost:3010/results/{filename}
