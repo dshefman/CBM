@@ -8,10 +8,27 @@
     "test": "test"
   },
   "dependencies": {
+    "check-type": "^0.4.11",
     "events": "^1.1.1",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "requirejs": "^2.3.6"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "bower": "^1.8.4",
+    "express-generator": "^4.16.0",
+    "jasmine-core": "^3.2.1",
+    "karma": "^3.0.0",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.2",
+    "karma-jasmine": "^1.1.2",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-requirejs": "^1.1.0",
+    "karma-verbose-reporter": "0.0.6",
+    "mocha": "^5.2.0"
+  },
   "scripts": {
     "postinstall": "./postinstall.sh"
   },
