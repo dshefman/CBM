@@ -21,7 +21,7 @@ Terminal:
 	npm run startEs6
 
 Browser
-	http://localhost:3010/results/{filename}
-	http://localhost:3010/callbacks/{filename}
+	http://localhost:3010/reports/results/{filename}
+	http://localhost:3010/reports/callbacks/{filename}
 
 	refresh to get new events
