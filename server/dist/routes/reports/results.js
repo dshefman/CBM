@@ -46,6 +46,8 @@ var detailedReport = function detailedReport(currentEvent) {
 	var rtn = '';
 	var warn = '';
 
+	//return rtn;
+
 	if (currentEvent.hasOwnProperty('danceResults')) {
 		var danceResults = currentEvent.danceResults;
 		var dances = [];

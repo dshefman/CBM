@@ -34,6 +34,8 @@ const detailedReport = (currentEvent) => {
 	let rtn = '';
 	let warn = '';	
 
+	//return rtn;
+
 	if (currentEvent.hasOwnProperty('danceResults')) { 
 		const danceResults = currentEvent.danceResults;
 		const dances = [];
