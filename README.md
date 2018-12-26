@@ -23,5 +23,6 @@ Terminal:
 Browser
 	http://localhost:3010/reports/results/{filename}
 	http://localhost:3010/reports/callbacks/{filename}
+	http://localhost:3010/reports/callbacks/{filename}/{dancerNumber}
 
 	refresh to get new events

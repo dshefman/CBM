@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var reportsResultsRouter = require('./routes/reports/results');
 var reportsCallbacksRouter = require('./routes/reports/callbacks');
+var reportsDancerRouter = require('./routes/reports/dancer');
 var callbacksRouter = require('./routes/events/callbacks');
 var singleDanceRouter = require('./routes/events/singleDance');
 
@@ -27,6 +28,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/reports/results', reportsResultsRouter);
 app.use('/reports/callbacks', reportsCallbacksRouter);
+app.use('/reports/dancer', reportsDancerRouter);
 app.use('/events/callbacks', callbacksRouter);
 app.use('/events/singleDance', singleDanceRouter);
 
