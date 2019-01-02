@@ -1,5 +1,6 @@
 const repl = require('repl');
 const Output = require('./output/Output');
+const OutputToConsole = require('./output/OutputToConsole');
 
 const Chooser = require('./states/Chooser');
 const _ = require('lodash/lodash');
@@ -22,8 +23,8 @@ function evaluate (cmd, context, filename, callback) {
 }
 
 function writer(output) {
-	outputMgr.append(output)
-    return util.inspect(output, {depth:null});
+	outputMgr.append(output); 
+    return util.inspect(OutputToConsole(output), {depth:null});
 }
 
 var server = repl.start({prompt: 'What is the name of the event> ', eval:evaluate, writer:writer});

@@ -29,8 +29,13 @@ const simpleReport = (currentEvent, dancersNumber) => {
 	let ranking = currentEvent.ranking;
 	let placement = null;
 	Object.entries(ranking).forEach((placementPair) => { 
-		
-		if (placementPair[1] == dancersNumber) {
+
+		let placementPairNumbers = placementPair[1];
+		if (typeof(placementPairNumbers) !== 'string') {//Array check
+			if (placementPairNumbers.indexOf(dancersNumber) !== -1) {
+				placement = placementPair[0]
+			}
+		} else if (placementPairNumbers == dancersNumber) {
 			placement = placementPair[0]
 		}
 	})
@@ -40,12 +45,13 @@ const simpleReport = (currentEvent, dancersNumber) => {
 		let suffix = 'th';
 		if (placement <=3 ) {suffix = orindalSuffixes[placement-1]} 
 
-		let finalReport = `Overall rank: ${placement}${suffix}\n`;
+		let finalReport = `\tOverall rank: ${placement}${suffix}\n`;
 		finalReport += placementDetails(currentEvent, dancersNumber)
 		return (finalReport);
 		
 	} else {
 		//console.log (`Did not dance in ${getTitle(currentEvent)}`)
+		return ''
 	}
 
 }
@@ -54,13 +60,19 @@ const placementDetails = (currentEvent, dancersNumber) => {
 	const tabulations =  currentEvent.tabulation; 
 	
 	if (!tabulations) {
-		return '\n Judges rankings about this dance were not saved';
+		let multidanceReport = detailedReport(currentEvent, dancersNumber);
+
+		if (!multidanceReport){
+			return '\n\tJudges rankings about this dance were not saved\n';
+		}
+
+		return multidanceReport
 	}
 
 	const tabulationByDancer  = tabulations[dancersNumber];
 
 	if (!tabulationByDancer) {
-		return '\n Dancer had no results in this event';
+		return '\n\tDancer had no results in this event\n';
 
 	}
 	console.log('tabulationByDancer', tabulationByDancer)
@@ -116,12 +128,14 @@ const detailedReport = (currentEvent, dancersNumber) => {
 		const ranking = currentEvent.ranking;
 		Object.keys(ranking).sort().forEach((placement) => {
 			let dancer = ranking[placement];
-			if (dancer.hasOwnProperty('each')) {
-				//TODO format tiesfrom array
-				rtn += `${dancer} tied in multidance. This part of the reporting isn't complete`
+			if (dancer === dancersNumber) {
+				if (dancer.hasOwnProperty('each')) {
+					//TODO format tiesfrom array
+					rtn += `${dancer} tied in multidance. This part of the reporting isn't complete`
 
-			} else {
-				rtn += `   ${dancer}\t\t${dancers[dancer].join(',')}\n`;
+				} else {
+					rtn += `   ${dancer}\t\t${dancers[dancer].join(',')}\n`;
+				}
 			}
 		})
 
@@ -145,10 +159,12 @@ router.get('/:filePath/:dancersNumber', function(req, res, next) {
   var resultsOutput = results.forEach( function (currentEvent) { 
   	if (currentEvent) {
   		let ranking = currentEvent.ranking;
-		finalReport += `${getTitle(currentEvent)}\n`;
-		finalReport += simpleReport(currentEvent, dancersNumber);
-		//finalReport += detailedReport(currentEvent);
-		finalReport += '\n\n';
+  		let currentEventReport = simpleReport(currentEvent, dancersNumber);
+  		if (currentEventReport.length){ 
+			finalReport += `${getTitle(currentEvent)}\n`;
+			finalReport += simpleReport(currentEvent, dancersNumber);
+			finalReport += '\n\n';
+		}
 
 	} else {
 		finalReport += 'End of Results'

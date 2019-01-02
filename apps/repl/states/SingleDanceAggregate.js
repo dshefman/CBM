@@ -58,7 +58,13 @@
             console.log('computing placements...');
 
             var computedResults = this.API.doFinal([judgesScores]);
-            callback(null, {event: this.danceName, ranking: computedResults.ranking, judgesScores: computedResults.judgesScores, tabulation: computedResults.tabulation} );
+            callback(null, { event: this.danceName,  
+                ranking: computedResults.ranking,
+                rankByDancer: computedResults.rankByDancer, 
+                judgesScores: computedResults.judgesScores, 
+                tabulation: computedResults.tabulation,
+                summation: computedResults.summation
+            } );
             this.repl.setPrompt('repl> ');
             this.repl.prompt();
 

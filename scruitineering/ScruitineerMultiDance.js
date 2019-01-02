@@ -60,12 +60,12 @@
      *                      },
      *                      ranking: {
      *                          finalRankPosition: dancer
-     *                      }
+     *                      },
+     *                      judgesScores
      *
      *                    }
      */
     ScruitineerMultiDance.prototype.doFinal = function(dancePlacements, judgesScores) {
-        console.log('TESTING')
         log('doFinal inputs', JSON.stringify(dancePlacements));
         var placementsByDancer = Util.tabulatePlacementPerDancer(dancePlacements); //{101: [1,1,1]
         log('doFinal.placementsByDancer', placementsByDancer);
@@ -93,6 +93,7 @@
 
         var rtn = {
             dancePlacements: dancePlacements,
+            judgesScores: judgesScores,
             summation: placementSummationByDancer,
             notes: notes,
             rankByDancer: invertRanking(ranking),

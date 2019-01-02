@@ -87,13 +87,17 @@
     };
 
     MultiDanceAggregate.prototype.computeMultiDance = function (callback){ 
-        console.log('computing placements...', JSON.stringify(this.aggregateResults,null, 4));
+        console.log('computing placements...');
 
         var computedResults = this.API.doFinal(this.aggregateResults);
         callback(null, {
             event: this.eventName, 
             danceResults: computedResults.dancePlacements, 
-            ranking: computedResults.ranking
+            ranking: computedResults.ranking,
+            rankByDancer: computedResults.rankByDancer,
+            summation: computedResults.summation,
+            notes: computedResults.notes,
+            judgesScores: computedResults.judgesScores
         } );
     }
 
