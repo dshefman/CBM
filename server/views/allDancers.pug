@@ -1,0 +1,6 @@
+extends layout
+
+block content
+  for dancer in dancers
+   li: a(href= url +'/' + dancer) ##{dancer}
+  

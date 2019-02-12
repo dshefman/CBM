@@ -13,3 +13,16 @@ Requirments: node 6.11.4 or later
 
 To run: 
 node apps/repl/repl.js
+
+To MC: 
+Terminal: 
+	cd /server/
+	npm run build
+	npm run startEs6
+
+Browser
+	http://localhost:3010/reports/results/{filename}
+	http://localhost:3010/reports/callbacks/{filename}
+	http://localhost:3010/reports/callbacks/{filename}/{dancerNumber}
+
+	refresh to get new events

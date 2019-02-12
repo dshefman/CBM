@@ -29,7 +29,8 @@ const _isObject = require('lodash/isObject');
     };
 
     Output.prototype.start = function(){
-        var fname = this.eventName + '_'+ new Date().getTime();
+        var now = new Date();
+        var fname = this.eventName + '_'+ (now.getHours()+1 ) + (now.getMinutes());
         var dir = 'output';
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
