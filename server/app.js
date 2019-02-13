@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var reportsResultsRouter = require('./routes/reports/results');
 var reportsCallbacksRouter = require('./routes/reports/callbacks');
 var reportsDancerRouter = require('./routes/reports/dancer');
@@ -26,7 +25,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/reports/results', reportsResultsRouter);
 app.use('/reports/callbacks', reportsCallbacksRouter);
 app.use('/reports/dancer', reportsDancerRouter);

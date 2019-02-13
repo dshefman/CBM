@@ -1,5 +1,9 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+	h1 Competitions
+	for file in files
+		div #{file}
+			li: a(href= 'reports/callbacks/' + file) callbacks
+			li: a(href= 'reports/results/' + file) results
+			li: a(href= 'reports/dancers/' + file) dancers
