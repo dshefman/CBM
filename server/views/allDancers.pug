@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  h1 All Dancers for #{file}
   for dancer in dancers
    li: a(href= url +'/' + dancer) ##{dancer}
   

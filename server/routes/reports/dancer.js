@@ -153,7 +153,12 @@ router.get('/:filePath/:dancersNumber', function(req, res, next) {
   var file = req.params.filePath;
   var dancersNumber = req.params.dancersNumber;
 
-  var output = fs.readFileSync(`public/output/${file}.txt`, 'utf8')
+  var output;
+  try { 
+  	output = fs.readFileSync(`public/output/${file}.txt`, 'utf8')
+  } catch(err) {
+  	output = fs.readFileSync(`public/outputCopy/${file}.txt`, 'utf8')
+  }
   var results = processOutput(output);
   var finalReport = `-------------------${dancersNumber} RESULTS -----------------\n`;
   var resultsOutput = results.forEach( function (currentEvent) { 
@@ -171,7 +176,7 @@ router.get('/:filePath/:dancersNumber', function(req, res, next) {
 	}
   })
   
-  res.render('results', {finalReport: finalReport});
+  res.render('results', { title: `${file}: dancer ${dancersNumber}`, finalReport: finalReport});
 });
 
 module.exports = router;

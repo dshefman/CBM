@@ -33,21 +33,28 @@ router.get('/:filePath', function(req, res, next) {
   var file = req.params.filePath;
   if (file) {
   	  console.log('reading from file', `public/output/${file}.txt`);
-	  var output = fs.readFileSync(`public/output/${file}.txt`, 'utf8')
-	  var results = processOutput(output);
-	  var callbackReport = '';
-	  var resultsOutput = results.forEach( function (currentEvent) { 
-	  	if (currentEvent) {
+  	  var output;
+	  try { 
+	  	output = fs.readFileSync(`public/output/${file}.txt`, 'utf8')
+	  } catch(err) {
+	  	output = fs.readFileSync(`public/outputCopy/${file}.txt`, 'utf8')
+	  }
+
+
+		var results = processOutput(output);
+		var callbackReport = '';
+		var resultsOutput = results.forEach( function (currentEvent) { 
+			if (currentEvent) {
 			let callback_results = currentEvent.callback_results;
 			callbackReport += `${getTitle(currentEvent)}         (calling back ${callback_results.length}) \n`;
 			callbackReport += `\t${simpleReport(callback_results)}\n\n`;
 			
-		} else {
-			callbackReport('End of Results')
-		}
-	  })
+			} else {
+				callbackReport('End of Results')
+			}
+	  	})
 	  
-	  res.render('results', {finalReport: callbackReport});
+	  	res.render('results', { title: `Callbacks for ${file}`, finalReport: callbackReport});
 	} else {
 		res.render('results', 'File not found. please append filename to end of path')
 	}
