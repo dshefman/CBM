@@ -9,8 +9,8 @@ var reportsResultsRouter = require('./routes/reports/results');
 var reportsCallbacksRouter = require('./routes/reports/callbacks');
 var reportsDancerRouter = require('./routes/reports/dancer');
 var reportsDancersRouter = require('./routes/reports/dancers');
-var callbacksRouter = require('./routes/events/callbacks');
-var singleDanceRouter = require('./routes/events/singleDance');
+//var callbacksRouter = require('./routes/events/callbacks');
+//var singleDanceRouter = require('./routes/events/singleDance');
 
 var app = express();
 
@@ -29,8 +29,8 @@ app.use('/reports/results', reportsResultsRouter);
 app.use('/reports/callbacks', reportsCallbacksRouter);
 app.use('/reports/dancer', reportsDancerRouter);
 app.use('/reports/dancers', reportsDancersRouter);
-app.use('/events/callbacks', callbacksRouter);
-app.use('/events/singleDance', singleDanceRouter);
+//app.use('/events/callbacks', callbacksRouter);
+//app.use('/events/singleDance', singleDanceRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
