@@ -37,7 +37,9 @@ const _isObject = require('lodash/isObject');
             fs.mkdirSync(dir);
         }
         
-        //this.wstream = fs.createWriteStream(filePath, {flags: 'as+'});
+        if (fs.existsSync(this.filePath)) {
+            console.log(`${this.filePath} exists already. If you want to append to this file do nothing. Otherwise quit (cntl+c) and enter a new name` );
+        }
         
     }
 
