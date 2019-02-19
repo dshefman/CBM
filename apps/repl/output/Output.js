@@ -30,22 +30,39 @@ const _isObject = require('lodash/isObject');
 
     Output.prototype.start = function(){
         var now = new Date();
-        var fname = this.eventName + '_'+ (now.getHours()+1 ) + (now.getMinutes());
+        var fname = (now.getFullYear()) + '_' + this.eventName;
         var dir = 'output';
+        this.filePath = dir + '/' + fname + '.txt';
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
-        this.wstream = fs.createWriteStream(dir +'/' + fname + '.txt');
+        
+        if (fs.existsSync(this.filePath)) {
+            console.log(`${this.filePath} exists already. If you want to append to this file do nothing. Otherwise quit (cntl+c) and enter a new name` );
+        }
+        
     }
 
     Output.prototype.append = function (data){
         if (_isObject(data)) {
-                this.wstream.write(JSON.stringify(data) + '\n');
+
+                var now = new Date()
+                var dataCopy = Object.assign({timestamp: now.toISOString()}, data);
+                var dataOut = JSON.stringify(dataCopy);
+
+
+                if (!dataOut.includes('!')) {
+                    this.wstream = fs.createWriteStream(this.filePath, {flags: 'a+'});
+                    this.wstream.write(JSON.stringify(dataCopy) + '\n');
+                    this.wstream.end();
+                } else {
+                    console.log('Did not record event because of (!) making event void')
+                }
             }
     }
 
     Output.prototype.end = function (){
-        this.wstream.end();
+        //this.wstream.end();
     }
 
     Output.prototype.toString = function () {

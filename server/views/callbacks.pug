@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 #{title}
+  pre #{finalReport}
+
+  script.
+    setTimeout(function() {
+      window.scrollTo(0,document.body.scrollHeight)
+    }, 100)

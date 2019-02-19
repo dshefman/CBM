@@ -46,8 +46,8 @@
 
     EliminationAggregate.prototype.evaluate  = function(cmd, context, filename, callback) {
         cmd = _.trim(cmd);
-        if (cmd == "menu") {
-            console.log("menuState >> " + this.menuState);
+        if (cmd == "menu" || cmd.includes('!')) {
+            console.log("abort detected (!), returning to menu");
             return new this.menuState(this.repl);
         } else if (cmd != ''){
             var dancerCallbacks = cmd.split(',');
