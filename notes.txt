@@ -4,4 +4,4 @@ XX Can we abort / fix
 
 auto-refresh on callbacks pages? 
 multi dance should validate dancers, so that the same dancers are in each dance
-Add separate data file with time stamps
+XXAdd separate data file with time stamps
