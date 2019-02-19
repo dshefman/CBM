@@ -23,15 +23,20 @@ node apps/repl/repl.js
 		Enter a blank line to finish the ranking
 
 
+use a exclaimation point (!) to void a event, in the case that a typo makes it in and you have hit return
+
+Cntl-C twice to quit
+
 To MC (announce callbacks and results): 
 Terminal: 
 	cd /server/
 	npm run start
 
 Browser
-    http://localhost:3010 // will list all of the events
-	http://localhost:3010/reports/results/{filename}
-	http://localhost:3010/reports/callbacks/{filename}
-	http://localhost:3010/reports/callbacks/{filename}/{dancerNumber}
+    http://localhost:3010 // will links all of the competitions
+	http://localhost:3010/reports/results/{filename}  //List the results of all of the events. Think Awards
+	http://localhost:3010/reports/dancers/{filename} //Link to all of the dancers
+	http://localhost:3010/reports/dancer/{filename}/{dancerNumber} //Ranking and individual scores for a dancer in all of the events they were in
+	http://localhost:3010/reports/callbacks/{filename} // callback results. Think MC 
 
 	refresh to get new events

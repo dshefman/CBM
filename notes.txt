@@ -1,6 +1,6 @@
-callbacks shuold allow for 0 to cancel
-Should be an easy way to return to menu from all screens
-Can we abort / fix
+XX callbacks shuold allow for (!) to cancel
+XX Should be an easy way to return to menu from all screens (!)
+XX Can we abort / fix
 
 auto-refresh on callbacks pages? 
 multi dance should validate dancers, so that the same dancers are in each dance
