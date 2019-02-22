@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+var os  = require('os');
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
@@ -28,7 +29,23 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-console.log('Node server running on port:' + port); 
+
+function filterIpAddresses(){
+  var ifaces = os.networkInterfaces();
+  var ipv4 = [];
+
+  Object.keys(ifaces).forEach((ifname) => {
+
+    ifaces[ifname].forEach((iface) => {
+      const { family, internal, address } = iface; 
+      if (family === 'IPv4' && !internal) {
+        ipv4.push(address);
+      }
+    })
+  })
+
+  return ipv4;
+}
 
 /**
  * Normalize a port into a number, string, or false.
@@ -89,3 +106,7 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+
+console.log('IpAddresses:', filterIpAddresses() );
+console.log('Node server running on port:' + port); 
