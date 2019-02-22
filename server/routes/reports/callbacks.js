@@ -54,9 +54,9 @@ router.get('/:filePath', function(req, res, next) {
 			}
 	  	})
 	  
-	  	res.render('results', { title: `Callbacks for ${file}`, finalReport: callbackReport});
+	  	res.render('callbacks', { title: `Callbacks for ${file}`, finalReport: callbackReport});
 	} else {
-		res.render('results', 'File not found. please append filename to end of path')
+		res.render('callbacks', 'File not found. please append filename to end of path')
 	}
 
 });
