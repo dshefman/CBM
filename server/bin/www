@@ -39,7 +39,6 @@ function filterIpAddresses(){
     ifaces[ifname].forEach((iface) => {
       const { family, internal, address } = iface; 
       if (family === 'IPv4' && !internal) {
-        console.log(family, internal, address);
         ipv4.push(address);
       }
     })
@@ -108,5 +107,6 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
+
+console.log('IpAddresses:', filterIpAddresses() );
 console.log('Node server running on port:' + port); 
-console.log('IpAddresses:\n\t', filterIpAddresses() );
