@@ -4,6 +4,8 @@ Competition Ballroom Machine
 
 Requirments: node 6.11.4 or later
 
+//////////////////////////////////////////////////
+
 To scrutineer: 
 node apps/repl/repl.js
 
@@ -27,6 +29,8 @@ use a exclaimation point (!) to void a event, in the case that a typo makes it i
 
 Cntl-C twice to quit
 
+//////////////////////////////////////////////////
+
 To MC (announce callbacks and results): 
 Terminal: 
 	cd /server/
@@ -40,3 +44,15 @@ Browser
 	http://localhost:3010/reports/callbacks/{filename} // callback results. Think MC 
 
 	refresh to get new events
+
+//////////////////////////////////////////////////
+
+To push to cloud: 
+
+if done a new install you need to authenticate with heroku
+ ./node_modules/heroku/bin/run login
+
+after that:
+  ./prepForDeploy.sh
+  cd ../deployResults
+  git push -f heroku master
