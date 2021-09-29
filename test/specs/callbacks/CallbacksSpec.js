@@ -1,10 +1,15 @@
 'use strict';
-define([
-    'chai',
-    'lodash/lodash',
-    'sinon',
-    'callbacks/Callbacks'
-], function(chai, _, sinon, Callbacks) {
+// define([
+//     'chai',
+//     'lodash/lodash',
+//     'sinon',
+//     'callbacks/Callbacks'
+// ], function(chai, _, sinon, Callbacks) {
+const chai = require('chai');
+const sinon = require('sinon');
+const _ = require('lodash');
+const Callbacks = require('../../../callbacks/Callbacks');
+    
 
     describe('Callbacks', function() {
         var expect = chai.expect;
@@ -18,7 +23,7 @@ define([
         chai.config.truncateThreshold = 0
 
         beforeEach(function(){
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
             callbacks =  new Callbacks();
 
         });
@@ -181,4 +186,4 @@ define([
 
     })
 
-});
+//});

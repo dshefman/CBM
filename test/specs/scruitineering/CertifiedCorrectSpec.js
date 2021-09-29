@@ -1,11 +1,18 @@
 'use strict';
-define([
-    'chai',
-    'lodash/lodash',
-    'sinon',
-    'scruitineering/ScruitineerSingleDance',
-    'scruitineering/ScruitineerMultiDance'
-], function(chai, _, sinon, ScruitineerSingleDance, ScruitineerMultiDance) {
+// define([
+//     'chai',
+//     'lodash/lodash',
+//     'sinon',
+//     'scruitineering/ScruitineerSingleDance',
+//     'scruitineering/ScruitineerMultiDance'
+// ], function(chai, _, sinon, ScruitineerSingleDance, ScruitineerMultiDance) {
+
+const chai = require('chai');
+const sinon = require('sinon');
+const _ = require('lodash');
+const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSingleDance');
+const ScruitineerMultiDance = require('../../../scruitineering/ScruitineerMultiDance');
+
 
     describe('Certified Correct - Scrutineering Exam Prep Book Examples', function() {
         var expect = chai.expect;
@@ -17,7 +24,7 @@ define([
         var R11 = 'R11';
 
         beforeEach(function(){
-           sandbox = sinon.sandbox.create();
+           sandbox = sinon.createSandbox();
             SC =  new ScruitineerSingleDance();
             SC_Multi = new ScruitineerMultiDance();
 
@@ -1522,4 +1529,4 @@ define([
         })
     })
 
-});
+//});

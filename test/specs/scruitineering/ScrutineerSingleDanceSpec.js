@@ -1,10 +1,10 @@
 'use strict';
-define([
-    'chai',
-    'lodash/lodash',
-    'sinon',
-    'scruitineering/ScruitineerSingleDance'
-], function(chai, _, sinon, ScruitineerSingleDance) {
+
+const chai = require('chai');
+const sinon = require('sinon');
+const _ = require('lodash');
+const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSingleDance');
+
 
     describe('Scruitineer', function() {
         var expect = chai.expect;
@@ -14,7 +14,7 @@ define([
         var SC
 
         beforeEach(function(){
-           sandbox = sinon.sandbox.create();
+           sandbox = sinon.createSandbox();
             SC =  new ScruitineerSingleDance();
 
         });
@@ -273,4 +273,3 @@ define([
 
     })
 
-});

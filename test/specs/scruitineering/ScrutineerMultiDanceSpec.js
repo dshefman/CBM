@@ -1,11 +1,18 @@
 'use strict';
-define([
-    'chai',
-    'lodash/lodash',
-    'sinon',
-    'scruitineering/ScruitineerMultiDance',
-    'scruitineering/ScruitineerSingleDance'
-], function(chai, _, sinon, ScruitineerMultiDance, ScruitineerSingleDance) {
+// define([
+//     'chai',
+//     'lodash/lodash',
+//     'sinon',
+//     'scruitineering/ScruitineerMultiDance',
+//     'scruitineering/ScruitineerSingleDance'
+// ], function(chai, _, sinon, ScruitineerMultiDance, ScruitineerSingleDance) {
+
+const chai = require('chai');
+const sinon = require('sinon');
+const _ = require('lodash');
+const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSingleDance');
+const ScruitineerMultiDance = require('../../../scruitineering/ScruitineerMultiDance');
+
 
     describe('ScruitineerMultiDance', function() {
         var expect = chai.expect;
@@ -18,7 +25,7 @@ define([
         chai.config.truncateThreshold = 0;
 
         beforeEach(function(){
-           sandbox = sinon.sandbox.create();
+           sandbox = sinon.createSandbox();
             SC_Multi =  new ScruitineerMultiDance(true)
             SC = new ScruitineerSingleDance();
 
@@ -260,4 +267,4 @@ define([
 
     })
 
-});
+// });

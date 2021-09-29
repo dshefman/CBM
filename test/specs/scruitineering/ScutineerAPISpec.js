@@ -1,10 +1,16 @@
 'use strict';
-define([
-    'chai',
-    'lodash/lodash',
-    'sinon',
-    'scruitineering/ScruitineerAPI',
-], function(chai, _, sinon, ScruitineerAPI) {
+// define([
+//     'chai',
+//     'lodash/lodash',
+//     'sinon',
+//     'scruitineering/ScruitineerAPI',
+// ], function(chai, _, sinon, ScruitineerAPI) {
+
+const chai = require('chai');
+const sinon = require('sinon');
+const _ = require('lodash');
+const ScruitineerAPI  =  require('../../../scruitineering/ScruitineerAPI');
+
 
     describe('Scruitineer API', function() {
         var expect = chai.expect;
@@ -16,7 +22,7 @@ define([
         var R11 = 'R11';
 
         beforeEach(function(){
-           sandbox = sinon.sandbox.create();
+           sandbox = sinon.createSandbox();
             SC =  new ScruitineerAPI();
 
         });
@@ -170,4 +176,4 @@ define([
 
     })
 
-});
+//});

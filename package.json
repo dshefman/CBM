@@ -18,6 +18,7 @@
     "express-generator": "^4.16.0",
     "heroku": "^7.21.0",
     "jasmine-core": "^3.2.1",
+    "jest": "^27.2.2",
     "karma": "^3.0.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -28,10 +29,12 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-requirejs": "^1.1.0",
     "karma-verbose-reporter": "0.0.6",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "sinon": "^11.1.2"
   },
   "scripts": {
-    "postinstall": "./postinstall.sh"
+    "postinstall": "./postinstall.sh",
+    "test": "jest test/specs"
   },
   "repository": {
     "type": "git",
