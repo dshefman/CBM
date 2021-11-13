@@ -3,7 +3,7 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const _ = require('lodash');
-const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSingleDance');
+const WeightedSingleDance  =  require('../../../scruitineering/WeightedSingleDance');
 
 
     describe('Scruitineer', function() {
@@ -15,7 +15,7 @@ const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSin
 
         beforeEach(function(){
            sandbox = sinon.createSandbox();
-            SC =  new ScruitineerSingleDance();
+            SC =  new WeightedSingleDance(true);
 
         });
 
@@ -48,26 +48,26 @@ const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSin
                 var E = createJudgingResults('E', dancers, [1,2,4,3,5,6]);
 
                 var results = SC.doFinal([A,B,C,D,E]);
-                assert.deepEqual(_.get(results, 'tabulation.51'), {'1-1':4, '1-2': 5, '1-3': 5, '1-4':5, '1-5': 5, '1-6': 5 } ,'1st place couple');
-                assert.deepEqual(_.get(results, 'tabulation.52'), {'1-1':1, '1-2': 4, '1-3': 4, '1-4':5, '1-5': 5, '1-6': 5 } ,'2nd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.53'), {'1-1':0, '1-2': 0, '1-3': 3, '1-4':4, '1-5': 5, '1-6': 5 } ,'3rd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.54'), {'1-1':0, '1-2': 1, '1-3': 2, '1-4':4, '1-5': 5, '1-6': 5 } ,'4th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.55'), {'1-1':0, '1-2': 0, '1-3': 1, '1-4':2, '1-5': 4, '1-6': 5 } ,'5th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.56'), {'1-1':0, '1-2': 0, '1-3': 0, '1-4':0, '1-5': 1, '1-6': 5 } ,'6th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.51'), {'1-1':4, '1-2': 5, '1-3': 5, '1-4':5, '1-5': 5, '1-6': 5 } ,'1st place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.52'), {'1-1':1, '1-2': 4, '1-3': 4, '1-4':5, '1-5': 5, '1-6': 5 } ,'2nd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.53'), {'1-1':0, '1-2': 0, '1-3': 3, '1-4':4, '1-5': 5, '1-6': 5 } ,'3rd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.54'), {'1-1':0, '1-2': 1, '1-3': 2, '1-4':4, '1-5': 5, '1-6': 5 } ,'4th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.55'), {'1-1':0, '1-2': 0, '1-3': 1, '1-4':2, '1-5': 4, '1-6': 5 } ,'5th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.56'), {'1-1':0, '1-2': 0, '1-3': 0, '1-4':0, '1-5': 1, '1-6': 5 } ,'6th place couple');
 
-                assert.deepEqual(_.get(results, 'rankByDancer.51'), '1' ,'1st place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.52'), '2' ,'2nd place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.53'), '3' ,'3rd place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.54'), '4' ,'4th place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.55'), '5' ,'5th place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.56'), '6' ,'6th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.51'), '1' ,'1st place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.52'), '2' ,'2nd place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.53'), '3' ,'3rd place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.54'), '4' ,'4th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.55'), '5' ,'5th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.56'), '6' ,'6th place couple placements');
 
                 var rankingExpectation ={1:'51', 2:'52', 3:'53', 4:'54', 5:'55', 6:'56'};
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
 
             })
 
-            it ('example 2', function(){
+            it('example 2', function(){
                 var dancers = [11,21,31,41,51,61];
                 var A = createJudgingResults('A', dancers, [1,2,3,4,5,6]);
                 var B = createJudgingResults('B', dancers, [5,2,3,4,1,6]);
@@ -94,19 +94,19 @@ const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSin
                 var G = createJudgingResults('G', dancers, [1,2,3,4,5,6]);
 
                 var results = SC.doFinal([A,B,C,D,E,F,G]);
-                assert.deepEqual(_.get(results, 'tabulation.61'), {'1-1':4, '1-2': 6, '1-3': 6, '1-4':7, '1-5': 7, '1-6': 7 } ,'1st place couple');
-                assert.deepEqual(_.get(results, 'tabulation.62'), {'1-1':2, '1-2': 5, '1-3': 5, '1-4':5, '1-5': 6, '1-6': 7 } ,'2nd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.63'), {'1-1':0, '1-2': 1, '1-3': 5, '1-4':6, '1-5': 6, '1-6': 7 } ,'3rd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.64'), {'1-1':1, '1-2': 2, '1-3': 4, '1-4':5, '1-5': 7, '1-6': 7 } ,'4th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.65'), {'1-1':0, '1-2': 0, '1-3': 1, '1-4':3, '1-5': 5, '1-6': 7 } ,'5th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.66'), {'1-1':0, '1-2': 0, '1-3': 0, '1-4':2, '1-5': 4, '1-6': 7 } ,'6th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.61'), {'1-1':4, '1-2': 6, '1-3': 6, '1-4':7, '1-5': 7, '1-6': 7 } ,'1st place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.62'), {'1-1':2, '1-2': 5, '1-3': 5, '1-4':5, '1-5': 6, '1-6': 7 } ,'2nd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.63'), {'1-1':0, '1-2': 1, '1-3': 5, '1-4':6, '1-5': 6, '1-6': 7 } ,'3rd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.64'), {'1-1':1, '1-2': 2, '1-3': 4, '1-4':5, '1-5': 7, '1-6': 7 } ,'4th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.65'), {'1-1':0, '1-2': 0, '1-3': 1, '1-4':3, '1-5': 5, '1-6': 7 } ,'5th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.66'), {'1-1':0, '1-2': 0, '1-3': 0, '1-4':2, '1-5': 4, '1-6': 7 } ,'6th place couple');
 
-                assert.deepEqual(_.get(results, 'rankByDancer.61'), '1' ,'1st place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.62'), '2' ,'2nd place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.63'), '3' ,'3rd place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.64'), '4' ,'4th place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.65'), '5' ,'5th place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.66'), '6' ,'6th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.61'), '1' ,'1st place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.62'), '2' ,'2nd place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.63'), '3' ,'3rd place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.64'), '4' ,'4th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.65'), '5' ,'5th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.66'), '6' ,'6th place couple placements');
 
                 var rankingExpectation ={1:'61', 2:'62', 3:'63', 4:'64', 5:'65', 6:'66'};
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
@@ -141,12 +141,12 @@ const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSin
                 var G = createJudgingResults('G', dancers, [1,3,2,4,6,5]);
 
                 var results = SC.doFinal([A,B,C,D,E,F,G]);
-                assert.deepEqual(_.get(results, 'tabulation.71'), {'1-1':4, '1-2': 5, '1-3': 6, '1-4':6, '1-5': 6, '1-6': 7 } ,'1st place couple');
-                assert.deepEqual(_.get(results, 'tabulation.72'), {'1-1':2, '1-2': 4, '1-3': 6, '1-4':6, '1-5': 7, '1-6': 7 } ,'2nd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.73'), {'1-1':1, '1-2': 4, '1-3': 4, '1-4':5, '1-5': 6, '1-6': 7 } ,'3rd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.74'), {'1-1':0, '1-2': 1, '1-3': 1, '1-4':4, '1-5': 6, '1-6': 7 } ,'4th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.75'), {'1-1':0, '1-2': 0, '1-3': 2, '1-4':4, '1-5': 5, '1-6': 7 } ,'5th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.76'), {'1-1':0, '1-2': 0, '1-3': 2, '1-4':3, '1-5': 5, '1-6': 7 } ,'6th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.71'), {'1-1':4, '1-2': 5, '1-3': 6, '1-4':6, '1-5': 6, '1-6': 7 } ,'1st place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.72'), {'1-1':2, '1-2': 4, '1-3': 6, '1-4':6, '1-5': 7, '1-6': 7 } ,'2nd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.73'), {'1-1':1, '1-2': 4, '1-3': 4, '1-4':5, '1-5': 6, '1-6': 7 } ,'3rd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.74'), {'1-1':0, '1-2': 1, '1-3': 1, '1-4':4, '1-5': 6, '1-6': 7 } ,'4th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.75'), {'1-1':0, '1-2': 0, '1-3': 2, '1-4':4, '1-5': 5, '1-6': 7 } ,'5th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.76'), {'1-1':0, '1-2': 0, '1-3': 2, '1-4':3, '1-5': 5, '1-6': 7 } ,'6th place couple');
 
                 assert.deepEqual(_.get(results, 'rankByDancer.71'), '1' ,'1st place couple placements');
                 assert.deepEqual(_.get(results, 'rankByDancer.72'), '2' ,'2nd place couple placements');
@@ -155,10 +155,10 @@ const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSin
                 assert.deepEqual(_.get(results, 'rankByDancer.75'), '5' ,'5th place couple placements');
                 assert.deepEqual(_.get(results, 'rankByDancer.76'), '6' ,'6th place couple placements');
 
-                assert.deepEqual(_.get(results, 'summation.72.1-2'), 6 ,'2nd place couple summation');
-                assert.deepEqual(_.get(results, 'summation.73.1-2'), 7 ,'3rd place couple summation');
-                assert.deepEqual(_.get(results, 'summation.74.1-4'), 14 ,'4th place couple summation');
-                assert.deepEqual(_.get(results, 'summation.75.1-4'), 14 ,'5th place couple summation');
+                // assert.deepEqual(_.get(results, 'summation.72.1-2'), 6 ,'2nd place couple summation');
+                // assert.deepEqual(_.get(results, 'summation.73.1-2'), 7 ,'3rd place couple summation');
+                // assert.deepEqual(_.get(results, 'summation.74.1-4'), 14 ,'4th place couple summation');
+                // assert.deepEqual(_.get(results, 'summation.75.1-4'), 14 ,'5th place couple summation');
 
 
                 var rankingExpectation ={1:'71', 2:'72', 3:'73', 4:'74', 5:'75', 6:'76'};
@@ -250,22 +250,41 @@ const ScruitineerSingleDance  =  require('../../../scruitineering/ScruitineerSin
                 var G = createJudgingResults('G', dancers, [3,2,4,6,1,5]);
 
                 var results = SC.doFinal([A,B,C,D,E,F,G]);
-                assert.deepEqual(_.get(results, 'tabulation.81'), {'1-1':0, '1-2':2, '1-3':6, '1-4':6, '1-5':7, '1-6':7} ,'1st place couple');
-                assert.deepEqual(_.get(results, 'tabulation.82'), {'1-1':0, '1-2':2, '1-3':4, '1-4':7, '1-5':7, '1-6':7} ,'2nd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.83'), {'1-1':1, '1-2':3, '1-3':3, '1-4':5, '1-5':5, '1-6':7} ,'3rd place couple');
-                assert.deepEqual(_.get(results, 'tabulation.84'), {'1-1':3, '1-2':3, '1-3':3, '1-4':4, '1-5':5, '1-6':7} ,'4th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.85'), {'1-1':2, '1-2':2, '1-3':3, '1-4':3, '1-5':6, '1-6':7} ,'5th place couple');
-                assert.deepEqual(_.get(results, 'tabulation.86'), {'1-1':1, '1-2':2, '1-3':2, '1-4':3, '1-5':5, '1-6':7} ,'6th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.81'), {'1-1':0, '1-2':2, '1-3':6, '1-4':6, '1-5':7, '1-6':7} ,'1st place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.82'), {'1-1':0, '1-2':2, '1-3':4, '1-4':7, '1-5':7, '1-6':7} ,'2nd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.83'), {'1-1':1, '1-2':3, '1-3':3, '1-4':5, '1-5':5, '1-6':7} ,'3rd place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.84'), {'1-1':3, '1-2':3, '1-3':3, '1-4':4, '1-5':5, '1-6':7} ,'4th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.85'), {'1-1':2, '1-2':2, '1-3':3, '1-4':3, '1-5':6, '1-6':7} ,'5th place couple');
+                // assert.deepEqual(_.get(results, 'tabulation.86'), {'1-1':1, '1-2':2, '1-3':2, '1-4':3, '1-5':5, '1-6':7} ,'6th place couple');
 
-                assert.deepEqual(_.get(results, 'rankByDancer.81'), '1' ,'1st place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.82'), '2' ,'2nd place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.83'), '3' ,'3rd place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.84'), '4' ,'4th place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.85'), '5' ,'5th place couple placements');
-                assert.deepEqual(_.get(results, 'rankByDancer.86'), '6' ,'6th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.81'), '1' ,'1st place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.82'), '2' ,'2nd place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.83'), '3' ,'3rd place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.84'), '4' ,'4th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.85'), '5' ,'5th place couple placements');
+                // assert.deepEqual(_.get(results, 'rankByDancer.86'), '6' ,'6th place couple placements');
 
 
                 var rankingExpectation ={1:'81', 2:'82', 3:'83', 4:'84', 5:'85', 6:'86'};
+                assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
+
+            })
+        })
+
+        describe('Rule 1-8 algebraicly ', function(){
+            it('Waltz', function(){
+                var dancers = [2,6,24,30,53,71,77];
+                var A = createJudgingResults('A', dancers, [4,3,2,5,1,6,7]);
+                var B = createJudgingResults('B', dancers, [3,7,2,6,5,4,1]);
+                var C = createJudgingResults('C', dancers, [4,1,6,2,5,3,7]);
+                var D = createJudgingResults('D', dancers, [3,1,5,2,7,6,4]);
+                var E = createJudgingResults('E', dancers, [4,1,7,2,5,3,6]);
+                var F = createJudgingResults('F', dancers, [2,7,1,6,3,5,4]);
+                var G = createJudgingResults('G', dancers, [6,7,2,1,5,3,4]);
+
+                var results = SC.doFinal([A,B,C,D,E,F,G]);
+
+                var rankingExpectation ={1:'30', 2:'24', 3:'6', 4:'2', 5:'71', 6:'77', 7:'53'};
                 assert.deepEqual(_.get(results, 'ranking'), rankingExpectation, 'final placements')
 
             })
